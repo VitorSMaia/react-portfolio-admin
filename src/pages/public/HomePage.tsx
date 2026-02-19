@@ -2,12 +2,32 @@ import { ArrowRight, Download, Terminal, Cpu, Globe, Database } from 'lucide-rea
 import { Link } from 'react-router-dom';
 import ProjectCard from '@/components/public/ProjectCard';
 import SkillBadge from '@/components/public/SkillBadge';
-import { getProjects, getSkills } from '@/services/mockData';
+import { getSkills } from '@/services/mockData';
+import { projectService } from '@/services/projectService';
+import { useEffect, useState } from 'react';
+import type { Project } from '@/types'; // Using type-only import to be safe
 
 export default function HomePage() {
-    const featuredProjects = getProjects().slice(0, 3);
+    const [featuredProjects, setFeaturedProjects] = useState<Project[]>([]);
+    const [loadingProjects, setLoadingProjects] = useState(true);
     const skills = getSkills();
     const categories = ['frontend', 'backend', 'tools', 'soft-skills'] as const;
+
+    useEffect(() => {
+        async function fetchFeatured() {
+            try {
+                // In a real app we might have a specific endpoint for "featured" or limit=3
+                // For now, get all and slice on client
+                const allProjects = await projectService.getAll();
+                setFeaturedProjects(allProjects.slice(0, 3));
+            } catch (error) {
+                console.error('Error loading featured projects', error);
+            } finally {
+                setLoadingProjects(false);
+            }
+        }
+        fetchFeatured();
+    }, []);
 
     return (
         <div className="flex flex-col gap-24 pb-20">
@@ -68,9 +88,15 @@ export default function HomePage() {
                 </div>
 
                 <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-                    {featuredProjects.map((project) => (
-                        <ProjectCard key={project.id} project={project} />
-                    ))}
+                    {loadingProjects ? (
+                        <div className="col-span-full py-20 text-center text-cyan-500 font-mono text-sm animate-pulse">
+                            [SCANNING_FILESYSTEM] PLEASE WAIT...
+                        </div>
+                    ) : (
+                        featuredProjects.map((project) => (
+                            <ProjectCard key={project.id} project={project} />
+                        ))
+                    )}
                 </div>
             </section>
 

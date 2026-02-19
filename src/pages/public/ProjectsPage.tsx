@@ -1,8 +1,38 @@
 import ProjectCard from '@/components/public/ProjectCard';
-import { getProjects } from '@/services/mockData';
+import { projectService } from '@/services/projectService';
+import type { Project } from '@/types';
+import { useEffect, useState } from 'react';
+import { Loader2 } from 'lucide-react';
 
 export default function ProjectsPage() {
-    const projects = getProjects();
+    const [projects, setProjects] = useState<Project[]>([]);
+    const [loading, setLoading] = useState(true);
+
+    useEffect(() => {
+        async function fetchProjects() {
+            try {
+                const data = await projectService.getAll();
+                setProjects(data);
+            } catch (error) {
+                console.error('Error fetching projects:', error);
+            } finally {
+                setLoading(false);
+            }
+        }
+        fetchProjects();
+    }, []);
+
+    if (loading) {
+        return (
+            <div className="container mx-auto px-6 py-20 flex justify-center items-center h-[50vh]">
+                <div className="flex flex-col items-center gap-4 text-cyan-500">
+                    <Loader2 size={40} className="animate-spin" />
+                    <p className="font-mono text-sm tracking-widest animate-pulse">ACCESSING_SECURE_ARCHIVE...</p>
+                </div>
+            </div>
+        );
+    }
+
     return (
         <div className="container mx-auto px-6 py-20">
             <div className="mb-12 border-b border-white/10 pb-6">

@@ -1,4 +1,6 @@
 import { Layers, Eye } from 'lucide-react';
+import { useEffect, useState } from 'react';
+import { supabase } from '@/lib/supabase';
 
 interface StatCardProps {
     title: string;
@@ -21,12 +23,27 @@ function StatCard({ title, value, trend, icon }: StatCardProps) {
 }
 
 export default function StatsCards() {
+    const [projectCount, setProjectCount] = useState<number | string>('-');
+
+    useEffect(() => {
+        async function fetchStats() {
+            const { count, error } = await supabase
+                .from('projects')
+                .select('*', { count: 'exact', head: true });
+
+            if (!error && count !== null) {
+                setProjectCount(count);
+            }
+        }
+        fetchStats();
+    }, []);
+
     return (
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             <StatCard
                 title="Projetos"
-                value="24"
-                trend="~+2 este mês"
+                value={projectCount}
+                trend="Total cadastrado"
                 icon={<Layers size={48} />}
             />
             <StatCard

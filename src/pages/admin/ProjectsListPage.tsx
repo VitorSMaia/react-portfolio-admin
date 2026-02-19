@@ -1,19 +1,64 @@
 import { Link } from 'react-router-dom';
-import { Plus, Edit2, Trash2, ExternalLink } from 'lucide-react';
-import { getProjects, saveProjects } from '@/services/mockData';
-import { useState } from 'react';
+import { Plus, Edit2, Trash2, ExternalLink, Loader2 } from 'lucide-react';
+import { projectService } from '@/services/projectService';
+import { useState, useEffect } from 'react';
 import type { Project } from '@/types';
 
 export default function ProjectsListPage() {
-    const [projects, setProjects] = useState<Project[]>(() => getProjects());
+    const [projects, setProjects] = useState<Project[]>([]);
+    const [loading, setLoading] = useState(true);
+    const [error, setError] = useState<string | null>(null);
 
-    const handleDelete = (id: string) => {
-        if (confirm('Are you sure you want to delete this project?')) {
-            const newProjects = projects.filter((p) => p.id !== id);
-            setProjects(newProjects);
-            saveProjects(newProjects);
+    useEffect(() => {
+        loadProjects();
+    }, []);
+
+    const loadProjects = async () => {
+        try {
+            setLoading(true);
+            const data = await projectService.getAll();
+            setProjects(data);
+        } catch (err) {
+            console.error('Failed to load projects:', err);
+            setError('Failed to load projects. Please check your connection.');
+        } finally {
+            setLoading(false);
         }
     };
+
+    const handleDelete = async (id: string) => {
+        if (confirm('Are you sure you want to delete this project?')) {
+            try {
+                await projectService.delete(id);
+                setProjects(projects.filter((p) => p.id !== id));
+            } catch (err) {
+                console.error('Failed to delete project:', err);
+                alert('Failed to delete project');
+            }
+        }
+    };
+
+    if (loading) {
+        return (
+            <div className="flex justify-center items-center h-64">
+                <Loader2 className="animate-spin text-blue-600" size={32} />
+            </div>
+        );
+    }
+
+    if (error) {
+        return (
+            <div className="text-center text-red-600 p-8 bg-red-50 rounded-lg">
+                <p>{error}</p>
+                <button
+                    onClick={loadProjects}
+                    className="mt-4 px-4 py-2 bg-white border border-red-200 rounded hover:bg-red-50"
+                >
+                    Try Again
+                </button>
+            </div>
+        );
+    }
 
     return (
         <div>

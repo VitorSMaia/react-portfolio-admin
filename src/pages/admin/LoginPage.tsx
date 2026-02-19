@@ -19,10 +19,10 @@ export default function LoginPage() {
             if (success) {
                 navigate('/admin');
             } else {
-                setError('Invalid credentials. Try alex@dev.com / admin123');
+                setError('Invalid email or password.');
             }
-        } catch (err) {
-            setError('An error occurred during login');
+        } catch (err: any) {
+            setError(err.message || 'An error occurred during login');
         }
     };
 
@@ -105,12 +105,9 @@ export default function LoginPage() {
                 </form>
 
                 <div className="mt-8 pt-6 border-t border-slate-800 text-center">
-                    <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-slate-800/50 border border-slate-700 text-[10px] text-slate-400 font-mono">
-                        <span>Hint:</span>
-                        <code className="text-indigo-400">alex@dev.com</code>
-                        <span className="w-1 h-1 rounded-full bg-slate-600"></span>
-                        <code className="text-indigo-400">admin123</code>
-                    </div>
+                    <p className="text-slate-500 text-xs text-center">
+                        Don't have an account? Ask your administrator.
+                    </p>
                 </div>
             </div>
 

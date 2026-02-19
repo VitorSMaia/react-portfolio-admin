@@ -1,8 +1,8 @@
-import { useEffect } from 'react';
+import { useEffect, useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { useNavigate, useParams } from 'react-router-dom';
-import { ArrowLeft, Save } from 'lucide-react';
-import { getProjects, saveProjects } from '@/services/mockData';
+import { ArrowLeft, Save, Loader2 } from 'lucide-react';
+import { projectService } from '@/services/projectService';
 import type { Project } from '@/types';
 
 // Extended type for the form to handle comma-separated string for technologies
@@ -14,44 +14,75 @@ export default function ProjectEditPage() {
     const { id } = useParams();
     const navigate = useNavigate();
     const isEditing = Boolean(id);
+    const [isLoading, setIsLoading] = useState(false);
+    const [isSaving, setIsSaving] = useState(false);
 
     const { register, handleSubmit, reset } = useForm<ProjectForm>();
 
     useEffect(() => {
         if (isEditing && id) {
-            const projects = getProjects();
-            const project = projects.find((p) => p.id === id);
+            loadProject(id);
+        }
+    }, [id, isEditing]);
+
+    const loadProject = async (projectId: string) => {
+        try {
+            setIsLoading(true);
+            const project = await projectService.getById(projectId);
             if (project) {
                 reset({
                     ...project,
                     technologiesString: project.technologies.join(', '),
                 });
             }
+        } catch (error) {
+            console.error('Failed to load project:', error);
+            alert('Failed to load project details');
+            navigate('/admin/projects');
+        } finally {
+            setIsLoading(false);
         }
-    }, [id, isEditing, reset]);
-
-    const onSubmit = (data: ProjectForm) => {
-        const projectData: Project = {
-            ...data,
-            id: isEditing && id ? id : crypto.randomUUID(), // simple ID generation
-            technologies: data.technologiesString.split(',').map((t) => t.trim()).filter(Boolean),
-            createdAt: data.createdAt || new Date().toISOString().split('T')[0],
-        };
-        // Remove the temporary string field
-        // @ts-ignore
-        delete projectData.technologiesString;
-
-        const projects = getProjects();
-        let newProjects;
-        if (isEditing) {
-            newProjects = projects.map(p => p.id === id ? projectData : p);
-        } else {
-            newProjects = [...projects, projectData];
-        }
-        saveProjects(newProjects);
-
-        navigate('/admin/projects');
     };
+
+    const onSubmit = async (data: ProjectForm) => {
+        try {
+            setIsSaving(true);
+            const technologies = data.technologiesString
+                .split(',')
+                .map((t) => t.trim())
+                .filter(Boolean);
+
+            if (isEditing && id) {
+                await projectService.update(id, {
+                    ...data,
+                    technologies,
+                });
+            } else {
+                await projectService.create({
+                    title: data.title,
+                    description: data.description,
+                    imageUrl: data.imageUrl,
+                    technologies,
+                    demoUrl: data.demoUrl,
+                    githubUrl: data.githubUrl,
+                });
+            }
+            navigate('/admin/projects');
+        } catch (error) {
+            console.error('Failed to save project:', error);
+            alert('Failed to save project');
+        } finally {
+            setIsSaving(false);
+        }
+    };
+
+    if (isLoading) {
+        return (
+            <div className="flex justify-center items-center h-64">
+                <Loader2 className="animate-spin text-blue-600" size={32} />
+            </div>
+        );
+    }
 
     return (
         <div className="max-w-4xl mx-auto">
@@ -98,11 +129,12 @@ export default function ProjectEditPage() {
                             />
                         </div>
 
+                        {/* Created At is usually auto-managed, but if you want to override it: */}
                         <div className="col-span-1">
                             <label className="block text-sm font-medium text-slate-700 mb-2">Created At</label>
                             <input
                                 type="date"
-                                {...register('createdAt', { required: true })}
+                                {...register('createdAt')}
                                 className="w-full px-4 py-2 rounded-lg border border-slate-300 focus:ring-2 focus:ring-blue-500 outline-none"
                             />
                         </div>
@@ -145,10 +177,11 @@ export default function ProjectEditPage() {
                         </button>
                         <button
                             type="submit"
-                            className="px-6 py-2 rounded-lg bg-blue-600 text-white font-medium hover:bg-blue-700 transition-colors flex items-center gap-2"
+                            disabled={isSaving}
+                            className="px-6 py-2 rounded-lg bg-blue-600 text-white font-medium hover:bg-blue-700 transition-colors flex items-center gap-2 disabled:opacity-50"
                         >
-                            <Save size={18} />
-                            Save Project
+                            {isSaving ? <Loader2 className="animate-spin" size={18} /> : <Save size={18} />}
+                            {isSaving ? 'Saving...' : 'Save Project'}
                         </button>
                     </div>
                 </form>
