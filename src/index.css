@@ -1,0 +1,79 @@
+@import url('https://fonts.googleapis.com/css2?family=Fira+Code:wght@300;400;500;600;700&family=Inter:wght@400;500;600;700&display=swap');
+@import "tailwindcss";
+
+@theme {
+  --font-sans: 'Inter', sans-serif;
+  --font-mono: 'Fira Code', monospace;
+
+  --color-primary: #0ea5e9;
+  /* Neon Blue */
+  --color-secondary: #d946ef;
+  /* Neon Purple */
+  --color-dark-bg: #020617;
+  /* Slate 950 */
+  --color-dark-surface: #0f172a;
+  /* Slate 900 */
+
+  --animate-fade-in-up: fade-in-up 0.5s ease-out forwards;
+  --animate-blink: blink 1s step-end infinite;
+
+  @keyframes blink {
+
+    0%,
+    100% {
+      opacity: 1;
+    }
+
+    50% {
+      opacity: 0;
+    }
+  }
+
+  @keyframes fade-in-up {
+    from {
+      opacity: 0;
+      transform: translateY(20px);
+    }
+
+    to {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
+}
+
+
+/* Custom Utilities */
+.animate-fade-in-up {
+  animation: var(--animate-fade-in-up);
+}
+
+.animate-blink {
+  animation: var(--animate-blink);
+}
+
+.delay-100 {
+  animation-delay: 100ms;
+}
+
+.delay-200 {
+  animation-delay: 200ms;
+}
+
+@layer base {
+  html {
+    background-color: var(--color-dark-bg);
+    color: #e2e8f0;
+    font-family: var(--font-sans);
+  }
+
+  h1,
+  h2,
+  h3,
+  h4,
+  h5,
+  h6,
+  .font-mono {
+    font-family: var(--font-mono);
+  }
+}
