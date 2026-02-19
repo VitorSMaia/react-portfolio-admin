@@ -13,10 +13,14 @@ jobs:
         uses: actions/setup-node@v3
         with:
           node-version: '22'
+      - name: Install vercel
+        run: npm install -g vercel
+      - name: Install dependencies
+        run: npm install
       - name: Pull vercel environment
-        run: vercel pull --yes --environment-production --token-${{ secrets.VERCELTOKEN }}
+        run: vercel pull --yes --environment-production --token=${{ secrets.VERCELTOKEN }}
       - name: Build Project
         run: vercel build --prod --token=${{ secrets.VERCELTOKEN }}
       - name: Deploy to vercel
-        run: vercel deploy --prebuilt --prod --token==${{ secrets.VERCELTOKEN }}
+        run: vercel deploy --prebuilt --prod --token=${{ secrets.VERCELTOKEN }}
       
