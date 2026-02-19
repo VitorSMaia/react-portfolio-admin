@@ -1,15 +1,11 @@
 import { Link } from 'react-router-dom';
 import { Plus, Edit2, Trash2, ExternalLink } from 'lucide-react';
 import { getProjects, saveProjects } from '@/services/mockData';
-import { useState, useEffect } from 'react';
+import { useState } from 'react';
 import type { Project } from '@/types';
 
 export default function ProjectsListPage() {
-    const [projects, setProjects] = useState<Project[]>([]);
-
-    useEffect(() => {
-        setProjects(getProjects());
-    }, []);
+    const [projects, setProjects] = useState<Project[]>(() => getProjects());
 
     const handleDelete = (id: string) => {
         if (confirm('Are you sure you want to delete this project?')) {

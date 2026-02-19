@@ -1,16 +1,12 @@
 import { Link } from 'react-router-dom';
 import { Plus, Edit2, Trash2 } from 'lucide-react';
 import { getSkills, saveSkills } from '@/services/mockData';
-import { useState, useEffect } from 'react';
+import { useState } from 'react';
 import type { Skill } from '@/types';
 import SkillBadge from '@/components/public/SkillBadge';
 
 export default function SkillsListPage() {
-    const [skills, setSkills] = useState<Skill[]>([]);
-
-    useEffect(() => {
-        setSkills(getSkills());
-    }, []);
+    const [skills, setSkills] = useState<Skill[]>(() => getSkills());
 
     const handleDelete = (id: string) => {
         if (confirm('Are you sure you want to delete this skill?')) {
