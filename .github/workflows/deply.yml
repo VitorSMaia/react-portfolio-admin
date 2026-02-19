@@ -16,7 +16,7 @@ jobs:
       - name: Install vercel
         run: npm install -g vercel
       - name: Install dependencies
-        run: npm install
+        run: npm install --g -vercel@latest  && npm run build
       - name: Pull vercel environment
         run: vercel pull --yes --environment-production --token=${{ secrets.VERCELTOKEN }}
       - name: Build Project
