@@ -90,15 +90,7 @@ export default function AdminLayout() {
                 <div className="relative z-10 max-w-7xl mx-auto">
                     <Outlet />
 
-                    {/* Footer */}
-                    <footer className="mt-20 pt-6 border-t border-slate-800 flex justify-between items-center text-[10px] text-slate-500 font-mono uppercase tracking-widest">
-                        <div>© 2026 DevAdmin Portfólio</div>
-                        <div className="flex gap-4">
-                            <span className="cursor-pointer hover:text-slate-300">Privacidade</span>
-                            <span className="cursor-pointer hover:text-slate-300">Suporte</span>
-                            <span className="text-indigo-500">v2.4.0-stable</span>
-                        </div>
-                    </footer>
+
                 </div>
             </main>
         </div>

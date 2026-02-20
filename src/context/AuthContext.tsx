@@ -9,6 +9,8 @@ export interface User {
     name: string;
     role: 'ADMIN' | 'EDITOR';
     avatar?: string;
+    github_url?: string;
+    linkedin_url?: string;
 }
 
 interface AuthContextType {
@@ -16,7 +18,9 @@ interface AuthContextType {
     isAuthenticated: boolean;
     isLoading: boolean;
     login: (email: string, password: string) => Promise<boolean>;
+
     logout: () => Promise<void>;
+    updateProfile: (data: Partial<User>) => Promise<boolean>;
 }
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
@@ -72,6 +76,8 @@ export function AuthProvider({ children }: { children: ReactNode }) {
                     name: data.name || 'User',
                     role: (data.role as 'ADMIN' | 'EDITOR') || 'EDITOR',
                     avatar: data.avatar_url,
+                    github_url: data.github_url,
+                    linkedin_url: data.linkedin_url,
                 });
             } else {
                 // Fallback if no profile exists yet
@@ -112,13 +118,49 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         setIsLoading(false);
     };
 
+    const updateProfile = async (data: Partial<User>): Promise<boolean> => {
+        if (!user) return false;
+
+        try {
+            const updates = {
+                id: user.id,
+                name: data.name,
+                avatar_url: data.avatar,
+                github_url: data.github_url,
+                linkedin_url: data.linkedin_url,
+                updated_at: new Date(),
+            };
+
+            const { error } = await supabase
+                .from('profiles')
+                .upsert(updates)
+                .select()
+                .single();
+
+            if (error) {
+                console.error('Error updating profile:', error);
+                return false;
+            }
+
+            // Update local state
+            setUser(prev => prev ? { ...prev, ...data } : null);
+            return true;
+
+        } catch (error) {
+            console.error('Error updating profile:', error);
+            return false;
+        }
+    };
+
     return (
         <AuthContext.Provider value={{
             user,
             isAuthenticated: !!user,
             isLoading,
+
             login,
-            logout
+            logout,
+            updateProfile
         }}>
             {children}
         </AuthContext.Provider>

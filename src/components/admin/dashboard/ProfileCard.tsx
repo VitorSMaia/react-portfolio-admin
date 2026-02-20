@@ -1,8 +1,32 @@
-import { Github, Linkedin } from 'lucide-react';
+
+import { useState, useEffect } from 'react';
+import { Github, Linkedin, Loader2, Save } from 'lucide-react';
 import { useAuth } from '@/context/AuthContext';
 
 export default function ProfileCard() {
-    const { user } = useAuth();
+    const { user, updateProfile } = useAuth();
+    const [github, setGithub] = useState('');
+    const [linkedin, setLinkedin] = useState('');
+    const [isSaving, setIsSaving] = useState(false);
+
+    useEffect(() => {
+        if (user) {
+            setGithub(user.github_url || '');
+            setLinkedin(user.linkedin_url || '');
+        }
+    }, [user]);
+
+    const handleUpdate = async () => {
+        setIsSaving(true);
+        const success = await updateProfile({
+            github_url: github,
+            linkedin_url: linkedin
+        });
+        setIsSaving(false);
+        if (success) {
+            // Optional: Add toast notification here
+        }
+    };
 
     return (
         <div className="bg-[#1e1b4b] rounded-xl border border-indigo-500/20 p-6 shadow-lg shadow-indigo-500/10 relative overflow-hidden group">
@@ -29,18 +53,44 @@ export default function ProfileCard() {
                 </div>
 
                 <div className="w-full space-y-3 mb-6">
-                    <div className="group/link flex items-center bg-[#0f172a] border border-slate-800 rounded-lg p-2.5 hover:border-indigo-500/50 transition-colors cursor-pointer">
-                        <Github size={16} className="text-slate-400 group-hover/link:text-white mr-3" />
-                        <span className="text-sm text-slate-300 font-mono truncate">github.com/alexdev</span>
+                    <div className="group/link flex items-center bg-[#0f172a] border border-slate-800 rounded-lg p-2.5 hover:border-indigo-500/50 transition-colors focus-within:border-indigo-500">
+                        <Github size={16} className={`mr-3 transition-colors ${github ? 'text-white' : 'text-slate-600'}`} />
+                        <input
+                            type="text"
+                            value={github}
+                            onChange={(e) => setGithub(e.target.value)}
+                            placeholder="github.com/username"
+                            className="bg-transparent border-none outline-none text-sm text-slate-300 font-mono w-full placeholder:text-slate-700"
+                        />
                     </div>
-                    <div className="group/link flex items-center bg-[#0f172a] border border-slate-800 rounded-lg p-2.5 hover:border-indigo-500/50 transition-colors cursor-pointer">
-                        <Linkedin size={16} className="text-slate-400 group-hover/link:text-white mr-3" />
-                        <span className="text-sm text-slate-300 font-mono truncate">linkedin.com/in/alexsilva</span>
+                    <div className="group/link flex items-center bg-[#0f172a] border border-slate-800 rounded-lg p-2.5 hover:border-indigo-500/50 transition-colors focus-within:border-indigo-500">
+                        <Linkedin size={16} className={`mr-3 transition-colors ${linkedin ? 'text-white' : 'text-slate-600'}`} />
+                        <input
+                            type="text"
+                            value={linkedin}
+                            onChange={(e) => setLinkedin(e.target.value)}
+                            placeholder="linkedin.com/in/username"
+                            className="bg-transparent border-none outline-none text-sm text-slate-300 font-mono w-full placeholder:text-slate-700"
+                        />
                     </div>
                 </div>
 
-                <button className="w-full bg-white hover:bg-slate-200 text-slate-900 font-bold py-2.5 rounded-lg text-sm uppercase tracking-wide transition-colors">
-                    Atualizar Perfil
+                <button
+                    onClick={handleUpdate}
+                    disabled={isSaving}
+                    className="w-full bg-white hover:bg-slate-200 text-slate-900 font-bold py-2.5 rounded-lg text-sm uppercase tracking-wide transition-colors flex items-center justify-center gap-2 disabled:opacity-70 disabled:cursor-not-allowed"
+                >
+                    {isSaving ? (
+                        <>
+                            <Loader2 size={16} className="animate-spin" />
+                            Salvando...
+                        </>
+                    ) : (
+                        <>
+                            <Save size={16} />
+                            Atualizar Perfil
+                        </>
+                    )}
                 </button>
             </div>
         </div>
