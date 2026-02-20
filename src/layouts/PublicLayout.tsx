@@ -1,12 +1,20 @@
 import { Outlet, Link, useLocation } from 'react-router-dom';
-import { Terminal, Github, Linkedin, Twitter, Menu, X } from 'lucide-react';
-import { useState } from 'react';
+import { Terminal, Github, Linkedin, Menu, X } from 'lucide-react';
+import { useState, useEffect } from 'react';
 import AnimatedBackground from '@/components/public/AnimatedBackground';
 import { cn } from '@/utils/cn';
 
 export default function PublicLayout() {
     const [isMenuOpen, setIsMenuOpen] = useState(false);
+    const [profile, setProfile] = useState<any>(null); // simplified type for now
     const location = useLocation();
+
+    useEffect(() => {
+        // Dynamic import to avoid circular dependencies if any, though service is clean
+        import('@/services/profileService').then(({ profileService }) => {
+            profileService.getOwnerProfile().then(setProfile);
+        });
+    }, []);
 
     const navLinks = [
         { name: 'ABOUT', path: '/' },
@@ -94,13 +102,20 @@ export default function PublicLayout() {
                         SYSTEM_STATUS: <span className="text-green-500">OPERATIONAL</span>
                     </div>
                     <div className="flex gap-6">
-                        {/* Social mock links */}
-                        <a href="#" className="text-slate-500 hover:text-cyan-400 transition-colors"><Github size={20} /></a>
-                        <a href="#" className="text-slate-500 hover:text-cyan-400 transition-colors"><Linkedin size={20} /></a>
-                        <a href="#" className="text-slate-500 hover:text-cyan-400 transition-colors"><Twitter size={20} /></a>
+                        {profile?.github_url && (
+                            <a href={profile.github_url} target="_blank" rel="noopener noreferrer" className="text-slate-500 hover:text-cyan-400 transition-colors">
+                                <Github size={20} />
+                            </a>
+                        )}
+                        {profile?.linkedin_url && (
+                            <a href={profile.linkedin_url} target="_blank" rel="noopener noreferrer" className="text-slate-500 hover:text-cyan-400 transition-colors">
+                                <Linkedin size={20} />
+                            </a>
+                        )}
+                        {/* Twitter/X is not yet in DB, keeping as mock or hiding if you prefer. I'll hide for consistency */}
                     </div>
                     <div className="font-mono text-xs text-slate-600">
-                        © 2024 DEV_NODE. All rights reserved.
+                        © 2024 {profile?.name || 'DEV_NODE'}. All rights reserved.
                     </div>
                 </div>
             </footer>
