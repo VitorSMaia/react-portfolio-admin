@@ -10,6 +10,7 @@ export default function AdminLayout() {
         { path: '/admin', icon: <LayoutDashboard size={20} />, label: 'Dashboard' },
         { path: '/admin/projects', icon: <FolderKanban size={20} />, label: 'Projetos' },
         { path: '/admin/users', icon: <Users size={20} />, label: 'Usuários' },
+        { path: '/admin/skills', icon: <FolderKanban size={20} />, label: 'Skills' }, // Reusing icon for now
         { path: '/admin/profile', icon: <UserIcon size={20} />, label: 'Perfil' },
     ];
 

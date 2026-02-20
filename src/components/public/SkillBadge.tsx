@@ -1,14 +1,18 @@
-import type { Skill } from '@/types';
 import { cn } from '@/utils/cn';
+interface BadgeSkill {
+    name: string;
+    category: string;
+    proficiency: number;
+}
 
 interface SkillBadgeProps {
-    skill: Skill;
+    skill: BadgeSkill;
     className?: string;
 }
 
 export default function SkillBadge({ skill, className }: SkillBadgeProps) {
     // Map categories to colors for tech theme
-    const colors = {
+    const colors: Record<string, string> = {
         frontend: 'bg-cyan-500',
         backend: 'bg-purple-500',
         tools: 'bg-emerald-500',

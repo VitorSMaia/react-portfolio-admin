@@ -4,7 +4,7 @@ import { useForm } from 'react-hook-form';
 import { useNavigate, useParams } from 'react-router-dom';
 import { Save, Loader2, AlertCircle } from 'lucide-react';
 import { skillService } from '@/services/skillService';
-import type { Skill, SkillInput } from '@/types/skill';
+import type { SkillInput } from '@/types/skill';
 
 export default function SkillForm() {
     const { id } = useParams();
