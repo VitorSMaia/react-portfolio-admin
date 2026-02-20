@@ -115,7 +115,7 @@ export default function PublicLayout() {
                         {/* Twitter/X is not yet in DB, keeping as mock or hiding if you prefer. I'll hide for consistency */}
                     </div>
                     <div className="font-mono text-xs text-slate-600">
-                        © 2024 {profile?.name || 'DEV_NODE'}. All rights reserved.
+                        © {new Date().getFullYear()} All rights reserved.
                     </div>
                 </div>
             </footer>
