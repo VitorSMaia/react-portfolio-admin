@@ -4,7 +4,7 @@ import { useState } from 'react';
 import { cn } from '@/utils/cn';
 import { useVisitorTracking } from '@/hooks/useVisitorTracking';
 import { LanguageProvider, useLanguage } from '@/context/LanguageContext';
-import { Globe, Terminal, ArrowRight, Github, Linkedin, Twitter, MessageSquare } from 'lucide-react';
+import { Globe, Terminal, ArrowRight, Github, Linkedin } from 'lucide-react';
 
 export default function PublicLayout() {
     useVisitorTracking();
