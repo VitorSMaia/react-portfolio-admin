@@ -178,12 +178,6 @@ function PublicLayoutContent() {
                                 <a href="https://www.linkedin.com/in/vitorsmaia" className="size-10 bg-slate-50 border border-slate-200 rounded-lg flex items-center justify-center text-slate-400 hover:text-primary hover:border-primary transition-all group" aria-label="LinkedIn">
                                     <Linkedin size={18} className="group-hover:scale-110 transition-transform" />
                                 </a>
-                                {/* <a href="#" className="size-10 bg-slate-50 border border-slate-200 rounded-lg flex items-center justify-center text-slate-400 hover:text-primary hover:border-primary transition-all group" aria-label="Twitter">
-                                    <Twitter size={18} className="group-hover:scale-110 transition-transform" />
-                                </a>
-                                <a href="#" className="size-10 bg-slate-50 border border-slate-200 rounded-lg flex items-center justify-center text-slate-400 hover:text-primary hover:border-primary transition-all group" aria-label="Message">
-                                    <MessageSquare size={18} className="group-hover:scale-110 transition-transform" />
-                                </a> */}
                             </div>
                         </div>
                     </div>
