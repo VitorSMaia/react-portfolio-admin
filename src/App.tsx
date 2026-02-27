@@ -11,6 +11,7 @@ import ProjectsListPage from '@/pages/admin/ProjectsListPage';
 import ProjectEditPage from '@/pages/admin/ProjectEditPage';
 import SkillsListPage from '@/pages/admin/SkillsListPage';
 import SkillEditPage from '@/pages/admin/SkillEditPage';
+import VisitorLogsPage from '@/pages/admin/VisitorLogsPage';
 
 function App() {
   return (
@@ -35,6 +36,7 @@ function App() {
             <Route path="skills" element={<SkillsListPage />} />
             <Route path="skills/new" element={<SkillEditPage />} />
             <Route path="skills/:id/edit" element={<SkillEditPage />} />
+            <Route path="logs" element={<VisitorLogsPage />} />
           </Route>
         </Route>
       </Routes>

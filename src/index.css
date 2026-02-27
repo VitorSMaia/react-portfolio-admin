@@ -1,32 +1,30 @@
-@import url('https://fonts.googleapis.com/css2?family=Fira+Code:wght@300;400;500;600;700&family=Inter:wght@400;500;600;700&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Fira+Code:wght@300;400;500;600;700&display=swap');
 @import "tailwindcss";
 
 @theme {
+  --font-display: 'Inter', sans-serif;
   --font-sans: 'Inter', sans-serif;
-  --font-mono: 'Fira Code', monospace;
+  --font-mono: 'ui-monospace', 'SFMono-Regular', 'Menlo', 'Monaco', 'Consolas', 'Liberation Mono', 'Courier New', monospace;
 
-  --color-primary: #0ea5e9;
-  /* Neon Blue */
-  --color-secondary: #d946ef;
-  /* Neon Purple */
+  /* Public (light) theme */
+  --color-primary: #0F172A;
+  --color-accent-cyan: #0891b2;
+  --color-background-light: #f8fafc;
+  --color-background-dark: #f1f5f9;
+  --color-card-dark: #ffffff;
+
+  /* Admin (dark) theme - kept for admin panel */
   --color-dark-bg: #020617;
-  /* Slate 950 */
   --color-dark-surface: #0f172a;
-  /* Slate 900 */
 
   --animate-fade-in-up: fade-in-up 0.5s ease-out forwards;
   --animate-blink: blink 1s step-end infinite;
+  --animate-scanline: scanline 6s linear infinite;
 
   @keyframes blink {
-
-    0%,
-    100% {
-      opacity: 1;
-    }
-
-    50% {
-      opacity: 0;
-    }
+    0%, 100% { opacity: 1; }
+    50% { opacity: 0; }
   }
 
   @keyframes fade-in-up {
@@ -34,16 +32,19 @@
       opacity: 0;
       transform: translateY(20px);
     }
-
     to {
       opacity: 1;
       transform: translateY(0);
     }
   }
+
+  @keyframes scanline {
+    0% { top: 0%; }
+    100% { top: 100%; }
+  }
 }
 
-
-/* Custom Utilities */
+/* ── Utility classes ─────────────────────────────────── */
 .animate-fade-in-up {
   animation: var(--animate-fade-in-up);
 }
@@ -52,28 +53,59 @@
   animation: var(--animate-blink);
 }
 
-.delay-100 {
-  animation-delay: 100ms;
+.animate-fade-in {
+  animation: fade-in-up 0.3s ease-out forwards;
 }
 
-.delay-200 {
-  animation-delay: 200ms;
+.delay-100 { animation-delay: 100ms; }
+.delay-200 { animation-delay: 200ms; }
+
+/* Terminal cursor blink */
+.terminal-cursor::after {
+  content: '_';
+  animation: blink 1s step-start infinite;
 }
 
+/* Hexagon shape for skill tiles */
+.hex-item {
+  clip-path: polygon(25% 0%, 75% 0%, 100% 50%, 75% 100%, 25% 100%, 0% 50%);
+  aspect-ratio: 1 / 1.15;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.3s ease;
+}
+
+/* Scanline overlay */
+.scanline-overlay {
+  position: fixed;
+  inset: 0;
+  pointer-events: none;
+  z-index: 100;
+  opacity: 0.08;
+  background: repeating-linear-gradient(
+    to bottom,
+    transparent 0px,
+    transparent 2px,
+    rgba(0, 0, 0, 0.03) 2px,
+    rgba(0, 0, 0, 0.03) 4px
+  );
+}
+
+/* ── Base ────────────────────────────────────────────── */
 @layer base {
+  /* Public pages inherit light background set per-layout */
   html {
-    background-color: var(--color-dark-bg);
-    color: #e2e8f0;
-    font-family: var(--font-sans);
+    font-family: var(--font-display);
   }
 
-  h1,
-  h2,
-  h3,
-  h4,
-  h5,
-  h6,
-  .font-mono {
-    font-family: var(--font-mono);
+  .public-page {
+    background-color: var(--color-background-light);
+    color: #0f172a;
+  }
+
+  .admin-page {
+    background-color: var(--color-dark-bg);
+    color: #e2e8f0;
   }
 }

@@ -1,65 +1,95 @@
 import type { Project } from '@/types';
-import { ExternalLink, Github } from 'lucide-react';
 
 interface ProjectCardProps {
     project: Project;
+    index?: number;
 }
 
-export default function ProjectCard({ project }: ProjectCardProps) {
-    return (
-        <div className="group relative bg-[#0f172a]/50 border border-white/10 overflow-hidden hover:border-cyan-500/50 transition-all duration-300">
-            <div className="absolute top-0 left-0 w-2 h-2 border-t border-l border-cyan-500 opacity-0 group-hover:opacity-100 transition-opacity" />
-            <div className="absolute top-0 right-0 w-2 h-2 border-t border-r border-cyan-500 opacity-0 group-hover:opacity-100 transition-opacity" />
-            <div className="absolute bottom-0 left-0 w-2 h-2 border-b border-l border-cyan-500 opacity-0 group-hover:opacity-100 transition-opacity" />
-            <div className="absolute bottom-0 right-0 w-2 h-2 border-b border-r border-cyan-500 opacity-0 group-hover:opacity-100 transition-opacity" />
+const BADGES = [
+    { label: 'LIVE', color: 'bg-primary/80' },
+    { label: 'BETA', color: 'bg-accent-cyan/80' },
+    { label: 'STABLE', color: 'bg-primary/80' },
+];
 
-            <div className="aspect-video w-full overflow-hidden relative">
-                <div className="absolute inset-0 bg-cyan-900/20 z-10 group-hover:bg-transparent transition-colors" />
-                <img
-                    src={project.imageUrl}
-                    alt={project.title}
-                    className="w-full h-full object-cover transform group-hover:scale-110 transition-transform duration-500 grayscale group-hover:grayscale-0"
-                />
+export default function ProjectCard({ project, index = 0 }: ProjectCardProps) {
+    const badge = BADGES[index % BADGES.length];
+
+    return (
+        <div className="group relative bg-white rounded-xl overflow-hidden border border-slate-200 transition-all hover:border-slate-400 hover:shadow-xl">
+            {/* Image */}
+            <div className="h-48 bg-slate-800 relative overflow-hidden">
+                {project.imageUrl ? (
+                    <div
+                        className="absolute inset-0 bg-cover bg-center transition-transform duration-500 group-hover:scale-110"
+                        style={{ backgroundImage: `url('${project.imageUrl}')` }}
+                    />
+                ) : (
+                    <div className="absolute inset-0 bg-gradient-to-br from-slate-700 to-slate-900" />
+                )}
+                {/* Gradient overlay */}
+                <div className="absolute inset-0 bg-gradient-to-t from-white/10 to-transparent" />
+
+                {/* Status badge */}
+                <div className="absolute top-4 right-4">
+                    <span
+                        className={`${badge.color} backdrop-blur-md text-[10px] text-white px-2 py-1 rounded font-bold uppercase tracking-widest`}
+                    >
+                        {badge.label}
+                    </span>
+                </div>
             </div>
 
-            <div className="absolute inset-0 flex flex-col items-center justify-center bg-black/70 opacity-0 group-hover:opacity-100 transition-opacity duration-300">
-                <h3 className="text-xl font-bold text-white mb-4 text-center px-4">{project.title}</h3>
-                <div className="flex gap-4">
-                    {project.demoUrl && (
-                        <a
-                            href={project.demoUrl}
-                            target="_blank"
-                            rel="noopener noreferrer"
-                            className="flex items-center gap-2 text-xs font-mono font-bold text-slate-300 hover:text-cyan-400 transition-colors bg-white/5 px-4 py-2 hover:bg-cyan-500/10 w-full justify-center"
+            {/* Body */}
+            <div className="p-6">
+                <h3 className="text-xl font-bold mb-2 group-hover:text-primary transition-colors tracking-tight text-slate-900">
+                    {project.title}
+                </h3>
+                <p className="text-slate-400 text-sm leading-relaxed mb-6 font-light line-clamp-3">
+                    {project.description}
+                </p>
+
+                {/* Tech chips */}
+                <div className="flex flex-wrap gap-2 mb-6">
+                    {project.technologies.map((tech) => (
+                        <span
+                            key={tech}
+                            className="text-[10px] bg-slate-900 border border-slate-700 text-accent-cyan px-2 py-1 rounded font-mono"
                         >
-                            <ExternalLink size={14} /> DEMO
-                        </a>
-                    )}
+                            {tech}
+                        </span>
+                    ))}
+                </div>
+
+                {/* Action buttons */}
+                <div className="flex gap-2">
                     {project.githubUrl && (
                         <a
                             href={project.githubUrl}
                             target="_blank"
                             rel="noopener noreferrer"
-                            className="flex items-center gap-2 text-xs font-mono font-bold text-slate-300 hover:text-white transition-colors bg-white/5 px-4 py-2 hover:bg-white/10 w-full justify-center"
+                            className="flex-1 flex items-center justify-center gap-2 bg-slate-50 hover:bg-slate-900 hover:text-white border border-slate-200 py-3 rounded-lg text-xs font-black uppercase tracking-widest transition-all text-slate-700"
                         >
-                            <Github size={14} /> SOURCE
+                            Access Source{' '}
+                            <span className="material-symbols-outlined text-sm">lock_open</span>
                         </a>
                     )}
-                </div>
-            </div>
-
-            <div className="p-6">
-                <h3 className="text-xl font-bold text-white mb-2">{project.title}</h3>
-                <p className="text-slate-600 mb-6 line-clamp-3">{project.description}</p>
-                <div className="flex flex-wrap gap-2">
-                    {project.technologies.map((tech) => (
-                        <span
-                            key={tech}
-                            className="px-3 py-1 text-xs font-medium bg-slate-100 text-slate-700 rounded-full"
+                    {project.demoUrl && (
+                        <a
+                            href={project.demoUrl}
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            className="flex-1 flex items-center justify-center gap-2 bg-accent-cyan hover:bg-cyan-700 text-white border border-accent-cyan py-3 rounded-lg text-xs font-black uppercase tracking-widest transition-all"
                         >
-                            {tech}
-                        </span>
-                    ))}
+                            Live Demo{' '}
+                            <span className="material-symbols-outlined text-sm">open_in_new</span>
+                        </a>
+                    )}
+                    {!project.githubUrl && !project.demoUrl && (
+                        <button className="w-full flex items-center justify-center gap-2 bg-slate-50 hover:bg-slate-900 hover:text-white border border-slate-200 py-3 rounded-lg text-xs font-black uppercase tracking-widest transition-all text-slate-700">
+                            Access Source{' '}
+                            <span className="material-symbols-outlined text-sm">lock_open</span>
+                        </button>
+                    )}
                 </div>
             </div>
         </div>

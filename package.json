@@ -7,11 +7,13 @@
     "dev": "vite",
     "build": "tsc -b && vite build",
     "lint": "eslint .",
-    "preview": "vite preview"
+    "preview": "vite preview",
+    "ses": "node ses-server/server.js"
   },
   "dependencies": {
     "@supabase/supabase-js": "^2.97.0",
     "@tailwindcss/vite": "^4.2.0",
+    "@types/uuid": "^10.0.0",
     "clsx": "^2.1.1",
     "framer-motion": "^12.34.2",
     "lucide-react": "^0.574.0",
@@ -20,6 +22,7 @@
     "react-hook-form": "^7.71.1",
     "react-router-dom": "^7.13.0",
     "tailwind-merge": "^3.5.0",
+    "uuid": "^13.0.0",
     "zustand": "^5.0.11"
   },
   "devDependencies": {

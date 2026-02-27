@@ -1,5 +1,5 @@
 import { Outlet, Link, useLocation } from 'react-router-dom';
-import { LayoutDashboard, FolderKanban, Users, User as UserIcon, Terminal, LogOut } from 'lucide-react';
+import { LayoutDashboard, FolderKanban, Users, User as UserIcon, Terminal, LogOut, Activity } from 'lucide-react';
 import { useAuth } from '@/context/AuthContext';
 
 export default function AdminLayout() {
@@ -10,7 +10,8 @@ export default function AdminLayout() {
         { path: '/admin', icon: <LayoutDashboard size={20} />, label: 'Dashboard' },
         { path: '/admin/projects', icon: <FolderKanban size={20} />, label: 'Projetos' },
         { path: '/admin/users', icon: <Users size={20} />, label: 'Usuários' },
-        { path: '/admin/skills', icon: <FolderKanban size={20} />, label: 'Skills' }, // Reusing icon for now
+        { path: '/admin/skills', icon: <FolderKanban size={20} />, label: 'Skills' },
+        { path: '/admin/logs', icon: <Activity size={20} />, label: 'Acessos' },
         { path: '/admin/profile', icon: <UserIcon size={20} />, label: 'Perfil' },
     ];
 
