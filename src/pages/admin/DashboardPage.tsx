@@ -3,7 +3,7 @@ import ProjectForm from '@/components/admin/dashboard/ProjectForm';
 import UserTable from '@/components/admin/dashboard/UserTable';
 import ProfileCard from '@/components/admin/dashboard/ProfileCard';
 import StatsCards from '@/components/admin/dashboard/StatsCards';
-import ActivityLog from '@/components/admin/dashboard/ActivityLog';
+
 
 export default function DashboardPage() {
     return (
@@ -44,8 +44,7 @@ export default function DashboardPage() {
                     {/* Stats */}
                     <StatsCards />
 
-                    {/* Activity Log */}
-                    <ActivityLog />
+
                 </div>
             </div>
         </div>

@@ -24,15 +24,28 @@ function StatCard({ title, value, trend, icon }: StatCardProps) {
 
 export default function StatsCards() {
     const [projectCount, setProjectCount] = useState<number | string>('-');
+    const [accessCount, setAccessCount] = useState<number | string>('-');
 
     useEffect(() => {
         async function fetchStats() {
-            const { count, error } = await supabase
+            // 1. Fetch total projects
+            const { count: pCount, error: pError } = await supabase
                 .from('projects')
                 .select('*', { count: 'exact', head: true });
 
-            if (!error && count !== null) {
-                setProjectCount(count);
+            if (!pError && pCount !== null) {
+                setProjectCount(pCount);
+            }
+
+            // 2. Fetch accesses in the last 24 hours
+            const twentyFourHoursAgo = new Date(Date.now() - 24 * 60 * 60 * 1000).toISOString();
+            const { count: aCount, error: aError } = await supabase
+                .from('visitor_logs')
+                .select('*', { count: 'exact', head: true })
+                .gte('created_at', twentyFourHoursAgo);
+
+            if (!aError && aCount !== null) {
+                setAccessCount(aCount);
             }
         }
         fetchStats();
@@ -48,7 +61,7 @@ export default function StatsCards() {
             />
             <StatCard
                 title="Acessos"
-                value="1.2k"
+                value={accessCount}
                 trend="@últimas 24h"
                 icon={<Eye size={48} />}
             />

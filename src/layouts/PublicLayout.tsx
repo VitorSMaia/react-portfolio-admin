@@ -1,9 +1,9 @@
-
 import { Outlet, Link, useLocation } from 'react-router-dom';
 import { useState } from 'react';
 import { cn } from '@/utils/cn';
 import { useVisitorTracking } from '@/hooks/useVisitorTracking';
-import { LanguageProvider, useLanguage } from '@/context/LanguageContext';
+import { LanguageProvider } from '@/context/LanguageContext';
+import { useLanguage } from '@/context/LanguageContextCore';
 import { Globe, Terminal, ArrowRight, Github, Linkedin } from 'lucide-react';
 
 export default function PublicLayout() {

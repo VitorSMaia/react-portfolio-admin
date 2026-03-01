@@ -1,51 +1,62 @@
-
-import { useEffect, useState } from 'react';
+import { useEffect, useState, useCallback } from 'react';
 import { useForm } from 'react-hook-form';
 import { useNavigate, useParams } from 'react-router-dom';
 import { Save, Loader2, AlertCircle } from 'lucide-react';
 import { skillService } from '@/services/skillService';
-import type { SkillInput } from '@/types/skill';
+import { skillCategoryService } from '@/services/skillCategoryService';
+import type { SkillInput, SkillCategory } from '@/types/skill';
 
 export default function SkillForm() {
     const { id } = useParams();
     const navigate = useNavigate();
     const isEditing = Boolean(id);
     const [loading, setLoading] = useState(false);
-    const [fetching, setFetching] = useState(isEditing);
+    const [fetching, setFetching] = useState(true);
     const [error, setError] = useState<string | null>(null);
+    const [categories, setCategories] = useState<SkillCategory[]>([]);
 
     const { register, handleSubmit, reset } = useForm<SkillInput>();
 
-    useEffect(() => {
-        if (isEditing && id) {
-            const loadSkill = async () => {
-                try {
-                    const skills = await skillService.getSkills();
-                    const skill = skills.find(s => s.id === id);
-                    if (skill) {
-                        reset(skill);
-                    } else {
-                        setError('Skill not found');
-                    }
-                } catch (err) {
-                    setError('Failed to load skill details');
-                    console.error(err);
-                } finally {
-                    setFetching(false);
+    const loadData = useCallback(async () => {
+        try {
+            setFetching(true);
+            const [categoriesData, skillsData] = await Promise.all([
+                skillCategoryService.getCategories(),
+                isEditing && id ? skillService.getSkills() : Promise.resolve([])
+            ]);
+
+            setCategories(categoriesData);
+
+            if (isEditing && id) {
+                const skill = skillsData.find(s => s.id === id);
+                if (skill) {
+                    reset(skill);
+                } else {
+                    setError('Skill not found');
                 }
-            };
-            loadSkill();
+            }
+        } catch (err) {
+            setError('Failed to load form data');
+            console.error(err);
+        } finally {
+            setFetching(false);
         }
     }, [id, isEditing, reset]);
+
+    useEffect(() => {
+        loadData();
+    }, [loadData]);
 
     const onSubmit = async (data: SkillInput) => {
         try {
             setLoading(true);
             setError(null);
 
-            // Ensure numbers
+            // Find selected category to set the string 'category' field for legacy support
+            const selectedCategory = categories.find(c => c.id === data.category_id);
             const payload = {
                 ...data,
+                category: selectedCategory?.label || data.category,
                 proficiency: Number(data.proficiency)
             };
 
@@ -95,13 +106,15 @@ export default function SkillForm() {
                     <div>
                         <label className="block text-xs font-mono text-slate-400 uppercase mb-2">Category</label>
                         <select
-                            {...register('category', { required: true })}
-                            className="w-full bg-[#1e293b] text-slate-200 px-4 py-3 rounded-lg border border-slate-700 focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500 outline-none transition-all appearance-none"
+                            {...register('category_id', { required: true })}
+                            className="w-full bg-[#1e293b] text-slate-200 px-4 py-3 rounded-lg border border-slate-700 focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500 outline-none transition-all appearance-none cursor-pointer"
                         >
-                            <option value="frontend">Frontend</option>
-                            <option value="backend">Backend</option>
-                            <option value="tools">Tools</option>
-                            <option value="soft-skills">Soft Skills</option>
+                            <option value="">Select a category...</option>
+                            {categories.map(cat => (
+                                <option key={cat.id} value={cat.id}>
+                                    {cat.label}
+                                </option>
+                            ))}
                         </select>
                     </div>
 

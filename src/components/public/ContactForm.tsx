@@ -1,44 +1,50 @@
 import { useState } from 'react';
+import { useForm } from 'react-hook-form';
+import { zodResolver } from '@hookform/resolvers/zod';
+import * as z from 'zod';
 import { Loader2, CheckCircle, AlertCircle } from 'lucide-react';
-import { supabase } from '@/lib/supabase';
+import { contactService } from '@/services/contactService';
 
+// Schema de validação Zod
+const contactSchema = z.object({
+    name: z.string().min(2, 'O nome deve ter pelo menos 2 caracteres'),
+    email: z.string().email('E-mail inválido'),
+    message: z.string().min(10, 'A mensagem deve ter pelo menos 10 caracteres'),
+});
+
+type ContactFormData = z.infer<typeof contactSchema>;
 type FormStatus = 'idle' | 'loading' | 'success' | 'error';
 
 export default function ContactForm() {
-    const [formData, setFormData] = useState({ name: '', email: '', message: '' });
     const [status, setStatus] = useState<FormStatus>('idle');
     const [errorMessage, setErrorMessage] = useState('');
 
-    const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
-        setFormData({ ...formData, [e.target.name]: e.target.value });
-    };
+    const {
+        register,
+        handleSubmit,
+        reset,
+        formState: { errors },
+    } = useForm<ContactFormData>({
+        resolver: zodResolver(contactSchema),
+    });
 
-    const handleSubmit = async (e: React.FormEvent) => {
-        e.preventDefault();
+    const onSubmit = async (data: ContactFormData) => {
         setStatus('loading');
         setErrorMessage('');
 
         try {
-            const { error: dbError } = await supabase
-                .from('contact_messages')
-                .insert([{ name: formData.name, email: formData.email, message: formData.message, status: 'pending' }]);
+            // Salva no banco via serviço
+            await contactService.saveToDatabase(data);
 
-            if (dbError) throw dbError;
-
-            // Attempt email dispatch via SES backend (non-blocking)
+            // Tenta disparar e-mail via serviço (non-blocking)
             try {
-                const sesUrl = import.meta.env.VITE_SES_SERVER_URL ?? 'http://localhost:3001';
-                await fetch(`${sesUrl}/api/send-email`, {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify(formData),
-                });
-            } catch {
-                console.warn('Email dispatch failed, but DB record saved.');
+                await contactService.sendMessage(data);
+            } catch (error) {
+                console.warn('Email dispatch failed, but DB record saved.', error);
             }
 
             setStatus('success');
-            setFormData({ name: '', email: '', message: '' });
+            reset();
             setTimeout(() => setStatus('idle'), 5000);
         } catch (error: unknown) {
             console.error('Contact protocol error:', error);
@@ -53,21 +59,22 @@ export default function ContactForm() {
 
     return (
         <div className="bg-white border border-slate-200 rounded-2xl p-8 shadow-xl">
-            <form onSubmit={handleSubmit} className="grid grid-cols-1 md:grid-cols-2 gap-6">
+            <form onSubmit={handleSubmit(onSubmit)} className="grid grid-cols-1 md:grid-cols-2 gap-6">
                 {/* Name */}
                 <div className="space-y-2">
                     <label className="text-[10px] font-mono text-primary uppercase tracking-[0.2em]">
                         SENDER_IDENTITY
                     </label>
                     <input
+                        {...register('name')}
                         type="text"
-                        name="name"
-                        required
-                        value={formData.name}
-                        onChange={handleChange}
                         placeholder="NAME / ALIAS"
-                        className="w-full bg-slate-50 border border-slate-200 rounded-lg p-3 text-slate-900 focus:border-slate-900 focus:ring-1 focus:ring-slate-900 outline-none transition-all placeholder:text-slate-400 font-mono text-sm"
+                        className={`w-full bg-slate-50 border ${errors.name ? 'border-red-500' : 'border-slate-200'
+                            } rounded-lg p-3 text-slate-900 focus:border-slate-900 focus:ring-1 focus:ring-slate-900 outline-none transition-all placeholder:text-slate-400 font-mono text-sm`}
                     />
+                    {errors.name && (
+                        <p className="text-red-500 text-[10px] font-mono">{errors.name.message}</p>
+                    )}
                 </div>
 
                 {/* Email */}
@@ -76,14 +83,15 @@ export default function ContactForm() {
                         SIGNAL_PROTOCOL
                     </label>
                     <input
+                        {...register('email')}
                         type="email"
-                        name="email"
-                        required
-                        value={formData.email}
-                        onChange={handleChange}
                         placeholder="EMAIL_ADDRESS"
-                        className="w-full bg-slate-50 border border-slate-200 rounded-lg p-3 text-slate-900 focus:border-slate-900 focus:ring-1 focus:ring-slate-900 outline-none transition-all placeholder:text-slate-400 font-mono text-sm"
+                        className={`w-full bg-slate-50 border ${errors.email ? 'border-red-500' : 'border-slate-200'
+                            } rounded-lg p-3 text-slate-900 focus:border-slate-900 focus:ring-1 focus:ring-slate-900 outline-none transition-all placeholder:text-slate-400 font-mono text-sm`}
                     />
+                    {errors.email && (
+                        <p className="text-red-500 text-[10px] font-mono">{errors.email.message}</p>
+                    )}
                 </div>
 
                 {/* Message */}
@@ -92,14 +100,15 @@ export default function ContactForm() {
                         ENCRYPTED_MESSAGE
                     </label>
                     <textarea
-                        name="message"
-                        required
+                        {...register('message')}
                         rows={5}
-                        value={formData.message}
-                        onChange={handleChange}
                         placeholder="ENTER DATA PACKET HERE..."
-                        className="w-full bg-slate-50 border border-slate-200 rounded-lg p-3 text-slate-900 focus:border-slate-900 focus:ring-1 focus:ring-slate-900 outline-none transition-all placeholder:text-slate-400 font-mono text-sm resize-none"
+                        className={`w-full bg-slate-50 border ${errors.message ? 'border-red-500' : 'border-slate-200'
+                            } rounded-lg p-3 text-slate-900 focus:border-slate-900 focus:ring-1 focus:ring-slate-900 outline-none transition-all placeholder:text-slate-400 font-mono text-sm resize-none`}
                     />
+                    {errors.message && (
+                        <p className="text-red-500 text-[10px] font-mono">{errors.message.message}</p>
+                    )}
                 </div>
 
                 {/* Submit */}

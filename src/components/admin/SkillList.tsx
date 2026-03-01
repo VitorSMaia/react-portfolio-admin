@@ -73,12 +73,16 @@ export default function SkillList() {
                         <tr key={skill.id} className="hover:bg-slate-800/50 transition-colors">
                             <td className="px-6 py-4 font-medium text-slate-200">{skill.name}</td>
                             <td className="px-6 py-4">
-                                <span className={`px-2 py-1 rounded text-xs font-mono uppercase border ${skill.category === 'frontend' ? 'bg-cyan-500/10 text-cyan-400 border-cyan-500/20' :
-                                        skill.category === 'backend' ? 'bg-purple-500/10 text-purple-400 border-purple-500/20' :
-                                            skill.category === 'tools' ? 'bg-emerald-500/10 text-emerald-400 border-emerald-500/20' :
-                                                'bg-yellow-500/10 text-yellow-400 border-yellow-500/20'
-                                    }`}>
-                                    {skill.category}
+                                <span
+                                    className={`px-2 py-1 rounded text-[10px] font-mono font-bold uppercase border ${skill.skill_categories?.color || (
+                                            skill.category === 'frontend' ? 'bg-cyan-500/10 text-cyan-400 border-cyan-500/20' :
+                                                skill.category === 'backend' ? 'bg-purple-500/10 text-purple-400 border-purple-500/20' :
+                                                    skill.category === 'tools' ? 'bg-emerald-500/10 text-emerald-400 border-emerald-500/20' :
+                                                        'bg-slate-500/10 text-slate-400 border-slate-500/20'
+                                        )
+                                        }`}
+                                >
+                                    {skill.skill_categories?.label || skill.category}
                                 </span>
                             </td>
                             <td className="px-6 py-4">

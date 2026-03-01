@@ -1,39 +1,16 @@
-import { createContext, useContext, useState, useEffect } from 'react';
+import { useState, useEffect } from 'react';
 import type { ReactNode } from 'react';
 import { supabase } from '@/lib/supabase';
-import type { Session } from '@supabase/supabase-js';
-
-export interface User {
-    id: string;
-    email: string;
-    name: string;
-    role: 'ADMIN' | 'EDITOR';
-    avatar?: string;
-    github_url?: string;
-    linkedin_url?: string;
-}
-
-interface AuthContextType {
-    user: User | null;
-    isAuthenticated: boolean;
-    isLoading: boolean;
-    login: (email: string, password: string) => Promise<boolean>;
-
-    logout: () => Promise<void>;
-    updateProfile: (data: Partial<User>) => Promise<boolean>;
-}
-
-const AuthContext = createContext<AuthContextType | undefined>(undefined);
+import type { User } from '@/types/auth';
+import { AuthContext } from './AuthContextCore';
 
 export function AuthProvider({ children }: { children: ReactNode }) {
     const [user, setUser] = useState<User | null>(null);
-    const [_session, setSession] = useState<Session | null>(null);
     const [isLoading, setIsLoading] = useState(true);
 
     useEffect(() => {
         // 1. Get initial session
         supabase.auth.getSession().then(({ data: { session } }) => {
-            setSession(session);
             if (session?.user) {
                 fetchProfile(session.user.id, session.user.email!);
             } else {
@@ -45,7 +22,6 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         const {
             data: { subscription },
         } = supabase.auth.onAuthStateChange((_event, session) => {
-            setSession(session);
             if (session?.user) {
                 fetchProfile(session.user.id, session.user.email!);
             } else {
@@ -78,6 +54,8 @@ export function AuthProvider({ children }: { children: ReactNode }) {
                     avatar: data.avatar_url,
                     github_url: data.github_url,
                     linkedin_url: data.linkedin_url,
+                    professional_bio_pt: data.professional_bio_pt,
+                    professional_bio_en: data.professional_bio_en,
                 });
             } else {
                 // Fallback if no profile exists yet
@@ -122,20 +100,22 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         if (!user) return false;
 
         try {
-            const updates = {
-                id: user.id,
-                name: data.name,
-                avatar_url: data.avatar,
-                github_url: data.github_url,
-                linkedin_url: data.linkedin_url,
+            // Prepare only the fields provided in data
+            const updates: any = {
                 updated_at: new Date(),
             };
 
+            if (data.name !== undefined) updates.name = data.name;
+            if (data.avatar !== undefined) updates.avatar_url = data.avatar;
+            if (data.github_url !== undefined) updates.github_url = data.github_url;
+            if (data.linkedin_url !== undefined) updates.linkedin_url = data.linkedin_url;
+            if (data.professional_bio_pt !== undefined) updates.professional_bio_pt = data.professional_bio_pt;
+            if (data.professional_bio_en !== undefined) updates.professional_bio_en = data.professional_bio_en;
+
             const { error } = await supabase
                 .from('profiles')
-                .upsert(updates)
-                .select()
-                .single();
+                .update(updates)
+                .eq('id', user.id);
 
             if (error) {
                 console.error('Error updating profile:', error);
@@ -167,10 +147,3 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     );
 }
 
-export function useAuth() {
-    const context = useContext(AuthContext);
-    if (context === undefined) {
-        throw new Error('useAuth must be used within an AuthProvider');
-    }
-    return context;
-}

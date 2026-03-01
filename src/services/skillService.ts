@@ -6,8 +6,7 @@ export const skillService = {
     async getSkills() {
         const { data, error } = await supabase
             .from('skills')
-            .select('*')
-            .order('category', { ascending: true })
+            .select('*, skill_categories(*)')
             .order('proficiency', { ascending: false });
 
         if (error) {

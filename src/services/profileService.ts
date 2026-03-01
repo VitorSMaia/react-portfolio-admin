@@ -7,38 +7,31 @@ export interface PublicProfile {
     avatar_url?: string;
     github_url?: string;
     linkedin_url?: string;
+    professional_bio_pt?: string;
+    professional_bio_en?: string;
     role: string;
 }
 
 export const profileService = {
     async getOwnerProfile(): Promise<PublicProfile | null> {
         try {
-            // Fetch the first profile with ADMIN role
+            // Fetch profiles prioritized by ADMIN role and then by bio existence
             const { data, error } = await supabase
                 .from('profiles')
-                .select('id, name, avatar_url, github_url, linkedin_url, role')
-                .eq('role', 'ADMIN')
-                .limit(1)
-                .single();
+                .select('id, name, avatar_url, github_url, linkedin_url, professional_bio_pt, professional_bio_en, role')
+                .order('role', { ascending: true }) // ADMIN usually comes first
+                .limit(1);
 
             if (error) {
-                // If no admin found, or error, try fetching ANY profile as fallback (for single user apps)
-                console.warn('Error fetching admin profile:', error);
-
-                const { data: fallbackData, error: fallbackError } = await supabase
-                    .from('profiles')
-                    .select('id, name, avatar_url, github_url, linkedin_url, role')
-                    .limit(1)
-                    .single();
-
-                if (fallbackError) {
-                    console.error('Error fetching fallback profile:', fallbackError);
-                    return null;
-                }
-                return fallbackData;
+                console.error('Error fetching profiles:', error);
+                return null;
             }
 
-            return data;
+            if (data && data.length > 0) {
+                return data[0] as PublicProfile;
+            }
+
+            return null;
         } catch (error) {
             console.error('Unexpected error fetching profile:', error);
             return null;

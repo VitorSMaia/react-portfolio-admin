@@ -2,6 +2,8 @@ export interface Project {
     id: string;
     title: string;
     description: string;
+    description_en: string;
+    description_pt: string;
     imageUrl: string;
     technologies: string[];
     demoUrl?: string;

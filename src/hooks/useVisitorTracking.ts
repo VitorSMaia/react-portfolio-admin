@@ -23,22 +23,27 @@ export function useVisitorTracking() {
                     localStorage.setItem(SESSION_KEY, sessionId);
                 }
 
-                // 2. Fetch visitor info from ipinfo.io (Native IPv6 support, highly reliable)
-                const response = await fetch('https://ipinfo.io/json');
-                if (!response.ok) throw new Error('Failed to fetch visitor data');
+                // 2. Fetch visitor info from ipinfo.io
+                let info: Partial<VisitorInfo> = {};
+                try {
+                    const response = await fetch('https://ipinfo.io/json');
+                    if (response.ok) {
+                        info = await response.json();
+                    }
+                } catch (e) {
+                    console.warn('Metadata fetch failed, falling back to minimal tracking', e);
+                }
 
-                const info: VisitorInfo = await response.json();
-
-                // 3. Parse location string (format: "lat,lng")
+                // 3. Parse location string
                 const [lat, lng] = (info.loc || "0,0").split(',').map(Number);
 
                 // 4. Prepare data package
                 const visitorData = {
-                    ip_address: info.ip,
-                    country: info.country,
-                    city: info.city,
-                    latitude: lat,
-                    longitude: lng,
+                    ip_address: info.ip || 'Unknown',
+                    country: info.country || 'Unknown',
+                    city: info.city || 'Unknown',
+                    latitude: lat || 0,
+                    longitude: lng || 0,
                     session_id: sessionId,
                     user_agent: navigator.userAgent,
                     raw_data: info

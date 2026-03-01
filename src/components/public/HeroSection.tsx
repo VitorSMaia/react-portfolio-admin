@@ -1,4 +1,24 @@
+import { useEffect, useState } from 'react';
+import { profileService, type PublicProfile } from '@/services/profileService';
+import { useLanguage } from '@/context/LanguageContextCore';
+
 export default function HeroSection() {
+    const [profile, setProfile] = useState<PublicProfile | null>(null);
+    const { lang } = useLanguage();
+
+    useEffect(() => {
+        const loadProfile = async () => {
+            const data = await profileService.getOwnerProfile();
+            console.log('HeroSection: Loaded profile data:', data);
+            if (data) setProfile(data);
+        };
+        loadProfile();
+    }, []);
+
+    const bio = lang === 'pt'
+        ? profile?.professional_bio_pt
+        : profile?.professional_bio_en;
+
     return (
         <section className="relative min-h-[90vh] flex items-center justify-center px-4 sm:px-6 overflow-hidden bg-background-light">
             {/* Radial gradient glow */}
@@ -34,8 +54,14 @@ export default function HeroSection() {
 
                             <p className="text-base sm:text-lg max-w-2xl border-l-2 border-slate-300 pl-4 text-slate-600">
                                 [Status: ONLINE]<br />
-                                Senior Software Engineer specialized in high-frequency neural interfaces,
-                                distributed cloud systems, and encrypted data tunnels.
+                                {(bio && bio.trim().length > 0) ? (
+                                    bio
+                                ) : (
+                                    <>
+                                        Senior Software Engineer specialized in high-frequency neural interfaces,
+                                        distributed cloud systems, and encrypted data tunnels.
+                                    </>
+                                )}
                             </p>
                         </div>
 

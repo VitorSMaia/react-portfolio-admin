@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useState, useCallback } from 'react';
 import { useForm } from 'react-hook-form';
 import { useNavigate, useParams } from 'react-router-dom';
 import { ArrowLeft, Save, Loader2 } from 'lucide-react';
@@ -19,13 +19,7 @@ export default function ProjectEditPage() {
 
     const { register, handleSubmit, reset } = useForm<ProjectForm>();
 
-    useEffect(() => {
-        if (isEditing && id) {
-            loadProject(id);
-        }
-    }, [id, isEditing]);
-
-    const loadProject = async (projectId: string) => {
+    const loadProject = useCallback(async (projectId: string) => {
         try {
             setIsLoading(true);
             const project = await projectService.getById(projectId);
@@ -42,7 +36,13 @@ export default function ProjectEditPage() {
         } finally {
             setIsLoading(false);
         }
-    };
+    }, [navigate, reset]);
+
+    useEffect(() => {
+        if (isEditing && id) {
+            loadProject(id);
+        }
+    }, [id, loadProject, isEditing]);
 
     const onSubmit = async (data: ProjectForm) => {
         try {
@@ -59,12 +59,8 @@ export default function ProjectEditPage() {
                 });
             } else {
                 await projectService.create({
-                    title: data.title,
-                    description: data.description,
-                    imageUrl: data.imageUrl,
+                    ...data,
                     technologies,
-                    demoUrl: data.demoUrl,
-                    githubUrl: data.githubUrl,
                 });
             }
             navigate('/admin/projects');
@@ -110,14 +106,25 @@ export default function ProjectEditPage() {
                             />
                         </div>
 
-                        <div className="col-span-2">
-                            <label className="block text-sm font-medium text-slate-700 mb-2">Description</label>
-                            <textarea
-                                {...register('description', { required: true })}
-                                rows={4}
-                                className="w-full px-4 py-2 rounded-lg border border-slate-300 focus:ring-2 focus:ring-blue-500 outline-none"
-                                placeholder="Project description..."
-                            />
+                        <div className="col-span-2 grid grid-cols-1 md:grid-cols-2 gap-6">
+                            <div>
+                                <label className="block text-sm font-medium text-slate-700 mb-2">Description (EN)</label>
+                                <textarea
+                                    {...register('description_en', { required: true })}
+                                    rows={4}
+                                    className="w-full px-4 py-2 rounded-lg border border-slate-300 focus:ring-2 focus:ring-blue-500 outline-none"
+                                    placeholder="Project description in English..."
+                                />
+                            </div>
+                            <div>
+                                <label className="block text-sm font-medium text-slate-700 mb-2">Descrição (PT)</label>
+                                <textarea
+                                    {...register('description_pt', { required: true })}
+                                    rows={4}
+                                    className="w-full px-4 py-2 rounded-lg border border-slate-300 focus:ring-2 focus:ring-blue-500 outline-none"
+                                    placeholder="Descrição do projeto em Português..."
+                                />
+                            </div>
                         </div>
 
                         <div className="col-span-1">

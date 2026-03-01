@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { useAuth } from '@/context/AuthContext';
+import { useAuth } from '@/context/AuthContextCore';
 import { Lock, Mail, Terminal, Loader2, ArrowRight } from 'lucide-react';
 
 export default function LoginPage() {
@@ -21,8 +21,8 @@ export default function LoginPage() {
             } else {
                 setError('Invalid email or password.');
             }
-        } catch (err: any) {
-            setError(err.message || 'An error occurred during login');
+        } catch (err: unknown) {
+            setError(err instanceof Error ? err.message : 'An error occurred during login');
         }
     };
 

@@ -1,4 +1,6 @@
 import type { Project } from '@/types';
+import DOMPurify from 'dompurify';
+import { useLanguage } from '@/context/LanguageContextCore';
 
 interface ProjectCardProps {
     project: Project;
@@ -12,7 +14,14 @@ const BADGES = [
 ];
 
 export default function ProjectCard({ project, index = 0 }: ProjectCardProps) {
+    const { lang } = useLanguage();
     const badge = BADGES[index % BADGES.length];
+
+    const description = lang === 'pt'
+        ? (project.description_pt || project.description)
+        : (project.description_en || project.description);
+
+    const sanitizedDescription = DOMPurify.sanitize(description);
 
     return (
         <div className="group relative bg-white rounded-xl overflow-hidden border border-slate-200 transition-all hover:border-slate-400 hover:shadow-xl">
@@ -44,9 +53,10 @@ export default function ProjectCard({ project, index = 0 }: ProjectCardProps) {
                 <h3 className="text-xl font-bold mb-2 group-hover:text-primary transition-colors tracking-tight text-slate-900">
                     {project.title}
                 </h3>
-                <p className="text-slate-400 text-sm leading-relaxed mb-6 font-light line-clamp-3">
-                    {project.description}
-                </p>
+                <div
+                    className="text-slate-500 text-sm leading-relaxed mb-6 flex-grow line-clamp-3"
+                    dangerouslySetInnerHTML={{ __html: sanitizedDescription }}
+                />
 
                 {/* Tech chips */}
                 <div className="flex flex-wrap gap-2 mb-6">

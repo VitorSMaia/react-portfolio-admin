@@ -2,18 +2,18 @@
 import React from 'react';
 import { ChevronLeft, ChevronRight, Search, Loader2 } from 'lucide-react';
 
-interface Column {
+interface Column<T = unknown> {
     label: string;
-    field: string;
+    field: keyof T | string;
     sortable?: boolean;
     type?: 'text' | 'date' | 'badge';
     format?: string;
-    view?: React.ComponentType<{ value: any; item: any }>;
+    view?: React.ComponentType<{ value: unknown; item: T }>;
 }
 
-interface DynamicTableProps {
-    data: any[];
-    columns: Column[];
+interface DynamicTableProps<T = unknown> {
+    data: T[];
+    columns: Column<T>[];
     loading?: boolean;
     total?: number;
     perPage?: number;
@@ -25,7 +25,7 @@ interface DynamicTableProps {
     onStatusFilterChange?: (status: string) => void;
 }
 
-export default function DynamicTable({
+export default function DynamicTable<T extends { id?: string | number }>({
     data,
     columns,
     loading = false,
@@ -37,11 +37,11 @@ export default function DynamicTable({
     searchPlaceholder = "Search...",
     statusFilterOptions,
     onStatusFilterChange
-}: DynamicTableProps) {
+}: DynamicTableProps<T>) {
     const totalPages = Math.ceil(total / perPage);
 
-    const renderCell = (item: any, column: Column) => {
-        const value = item[column.field];
+    const renderCell = (item: T, column: Column<T>) => {
+        const value = (item as Record<string, unknown>)[column.field as string];
 
         if (column.view) {
             const ViewComponent = column.view;
@@ -49,18 +49,18 @@ export default function DynamicTable({
         }
 
         if (column.type === 'date') {
-            return new Date(value).toLocaleString();
+            return new Date(value as string | number | Date).toLocaleString();
         }
 
         if (column.type === 'badge') {
             return (
                 <span className="px-2 py-1 rounded text-[10px] font-mono font-bold uppercase tracking-wide bg-slate-800 border border-slate-700 text-slate-400">
-                    {value}
+                    {value as React.ReactNode}
                 </span>
             );
         }
 
-        return value;
+        return value as React.ReactNode;
     };
 
     return (

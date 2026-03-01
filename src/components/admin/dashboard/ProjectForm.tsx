@@ -8,7 +8,8 @@ export default function ProjectForm() {
     const [loading, setLoading] = useState(false);
     const [formData, setFormData] = useState({
         title: '',
-        description: '',
+        description_en: '',
+        description_pt: '',
         imageUrl: '',
         technologies: ''
     });
@@ -19,16 +20,17 @@ export default function ProjectForm() {
         try {
             await projectService.create({
                 title: formData.title,
-                description: formData.description,
-                imageUrl: formData.imageUrl || 'https://images.unsplash.com/photo-1557821552-17105176677c?w=800&q=80', // Default placeholder
+                description: formData.description_en, // Default description to english version
+                description_en: formData.description_en,
+                description_pt: formData.description_pt,
+                imageUrl: formData.imageUrl || 'https://images.unsplash.com/photo-1557821552-17105176677c?w=800&q=80',
                 technologies: formData.technologies.split(',').map(t => t.trim()).filter(Boolean),
                 demoUrl: '',
                 githubUrl: ''
             });
             // Reset form
-            setFormData({ title: '', description: '', imageUrl: '', technologies: '' });
+            setFormData({ title: '', description_en: '', description_pt: '', imageUrl: '', technologies: '' });
             alert('Projeto criado com sucesso!');
-            // Optional: refresh dashboard stats or list (would need context or reload)
             window.location.reload();
         } catch (error) {
             console.error(error);
@@ -62,6 +64,31 @@ export default function ProjectForm() {
                     />
                 </div>
 
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <div>
+                        <label className="block text-xs font-mono text-slate-500 uppercase mb-2">Descrição (EN)</label>
+                        <textarea
+                            rows={2}
+                            required
+                            value={formData.description_en}
+                            onChange={e => setFormData({ ...formData, description_en: e.target.value })}
+                            placeholder="English description..."
+                            className="w-full bg-[#1e293b] border border-slate-700 rounded-lg px-4 py-2.5 text-sm text-white focus:outline-none focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500 transition-colors placeholder:text-slate-600 resize-none"
+                        ></textarea>
+                    </div>
+                    <div>
+                        <label className="block text-xs font-mono text-slate-500 uppercase mb-2">Descrição (PT)</label>
+                        <textarea
+                            rows={2}
+                            required
+                            value={formData.description_pt}
+                            onChange={e => setFormData({ ...formData, description_pt: e.target.value })}
+                            placeholder="Descrição em português..."
+                            className="w-full bg-[#1e293b] border border-slate-700 rounded-lg px-4 py-2.5 text-sm text-white focus:outline-none focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500 transition-colors placeholder:text-slate-600 resize-none"
+                        ></textarea>
+                    </div>
+                </div>
+
                 <div>
                     <label className="block text-xs font-mono text-slate-500 uppercase mb-2">Imagem URL (Opcional)</label>
                     <div className="relative">
@@ -74,18 +101,6 @@ export default function ProjectForm() {
                             className="w-full bg-[#1e293b] border border-slate-700 rounded-lg pl-10 pr-4 py-2.5 text-sm text-white focus:outline-none focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500 transition-colors placeholder:text-slate-600"
                         />
                     </div>
-                </div>
-
-                <div>
-                    <label className="block text-xs font-mono text-slate-500 uppercase mb-2">Descrição Curta</label>
-                    <textarea
-                        rows={3}
-                        required
-                        value={formData.description}
-                        onChange={e => setFormData({ ...formData, description: e.target.value })}
-                        placeholder="Descreva brevemente as funcionalidades..."
-                        className="w-full bg-[#1e293b] border border-slate-700 rounded-lg px-4 py-2.5 text-sm text-white focus:outline-none focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500 transition-colors placeholder:text-slate-600 resize-none"
-                    ></textarea>
                 </div>
 
                 <div>

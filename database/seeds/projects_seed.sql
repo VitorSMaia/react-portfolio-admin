@@ -1,0 +1,50 @@
+INSERT INTO "public"."projects" 
+(title, description_en, description_pt, image_url, technologies, demo_url, github_url)
+VALUES 
+('Mindful Connect', 
+ 'Robust Multi-tenancy system for therapy clinics and psychologists management, focusing on data isolation and scalability.', 
+ 'Sistema Multi-tenancy robusto para gestão de clínicas de terapia e psicólogos, focado em isolamento de dados e escalabilidade.', 
+ 'https://www.philips.com.br/c-dam/b2bhc/br/marketing/emr_thumb_pt.jpg', 
+ ARRAY['Laravel','PostgreSQL','Multi-tenancy','Tailwind CSS'], 
+ null, 
+ null),
+
+('Djin - Gourmet Geladinhos', 
+ 'Family entrepreneurship project focused on branding and sales of gourmet popsicles.', 
+ 'Projeto de empreendedorismo familiar focado em branding e vendas de geladinhos gourmet.', 
+ 'https://i.postimg.cc/8zR4yWVj/Gemini-Generated-Image-vhwlwlvhwlwlvhwl.png', 
+ ARRAY['Branding','Business Strategy','Design'], 
+ null, 
+ null),
+
+('AppSolar (EDMOND Tech)', 
+ 'Management system for photovoltaic orders, optimizing the sales flow and installation of solar energy.', 
+ 'Sistema de gestão de pedidos fotovoltaicos, otimizando o fluxo de vendas e instalação de energia solar.', 
+ 'https://agenciandc.com.br/wp-content/uploads/2023/02/agenciandc-portfolio-appsolar-logo-cover-1024x288.png.webp', 
+ ARRAY['Web Development','Business Logic','API Integration'], 
+ null, 
+ null),
+
+('Revo Platform', 
+ 'Custom multi-tenant architecture for Revo, focused on performance and dynamic subdomain management.', 
+ 'Arquitetura multi-tenant customizada para a empresa Revo, focada em performance e gerenciamento dinâmico de subdomínios.', 
+ 'https://revo360.revoenergia.com.br/assets/img/lg-revo.png', 
+ ARRAY['Laravel','PHP','MySQL','Infrastructure'], 
+ null, 
+ null),
+
+('Gallery-Vault', 
+ 'Digital Asset Management (DAM) dashboard developed for managing digital assets securely.', 
+ 'Dashboard de Digital Asset Management (DAM) desenvolvido, gerenciando ativos digitais com segurança.', 
+ 'https://i.postimg.cc/PqGGD1Qz/Whats-App-Image-2026-02-19-at-08-00-42-(1).jpg', 
+ ARRAY['Laravel','React','AWS S3','Cloud Architecture'], 
+ null, 
+ null),
+
+('API & Portal Wirelink', 
+ 'API infrastructure and portal development for Wirelink Telecom, improving telecommunications service delivery.', 
+ 'Desenvolvimento de infraestrutura de API e portal para a Wirelink Telecom, melhorando a entrega de serviços de telecomunicações.', 
+ 'https://cloud.wirelink.com.br/content/images/company/wirelink/logo.png?6bf9c63e-05dd-4a96-9593-55e16a2334e2', 
+ ARRAY['API Development','Telecom Systems','Backend'], 
+ null, 
+ null);

@@ -1,5 +1,5 @@
 
-import { useEffect, useState } from 'react';
+import { useEffect, useState, useCallback } from 'react';
 import { MapPin, Activity } from 'lucide-react';
 import { visitorService } from '@/services/visitorService';
 import type { VisitorLog } from '@/types/visitor';
@@ -9,26 +9,28 @@ export default function VisitorLogsPage() {
     const [logs, setLogs] = useState<VisitorLog[]>([]);
     const [loading, setLoading] = useState(true);
     const [total, setTotal] = useState(0);
+    const [totalHits, setTotalHits] = useState(0);
     const [page, setPage] = useState(1);
     const [filters, setFilters] = useState({ country: '', city: '' });
     const perPage = 10;
 
-    useEffect(() => {
-        loadLogs();
-    }, [page, filters]);
-
-    const loadLogs = async () => {
+    const loadLogs = useCallback(async () => {
         try {
             setLoading(true);
-            const { data, total: count } = await visitorService.getVisitorLogs(page, perPage, filters);
+            const { data, total: count, totalHits: hits } = await visitorService.getVisitorLogs(page, perPage, filters);
             setLogs(data);
             setTotal(count);
+            setTotalHits(hits);
         } catch (error) {
             console.error('Failed to load access logs:', error);
         } finally {
             setLoading(false);
         }
-    };
+    }, [page, filters, perPage]);
+
+    useEffect(() => {
+        loadLogs();
+    }, [loadLogs]);
 
     const columns = [
         {
@@ -39,8 +41,8 @@ export default function VisitorLogsPage() {
         {
             label: 'IP Address',
             field: 'ip_address',
-            view: ({ value }: { value: string }) => (
-                <span className="font-mono text-indigo-400">{value}</span>
+            view: ({ value }: { value: unknown }) => (
+                <span className="font-mono text-indigo-400">{value as string}</span>
             )
         },
         {
@@ -54,20 +56,27 @@ export default function VisitorLogsPage() {
             )
         },
         {
+            label: 'Hits',
+            field: 'total_visits',
+            view: ({ value }: { value: unknown }) => (
+                <span className="font-bold text-emerald-400">{value as number || 1}</span>
+            )
+        },
+        {
             label: 'Session ID',
             field: 'session_id',
-            view: ({ value }: { value: string }) => (
-                <span className="text-[10px] font-mono text-slate-500 truncate max-w-[100px] block" title={value}>
-                    {value.slice(0, 8)}...
+            view: ({ value }: { value: unknown }) => (
+                <span className="text-[10px] font-mono text-slate-500 truncate max-w-[100px] block" title={value as string}>
+                    {(value as string).slice(0, 8)}...
                 </span>
             )
         },
         {
             label: 'User Agent',
             field: 'user_agent',
-            view: ({ value }: { value: string }) => (
-                <span className="text-[10px] text-slate-600 truncate max-w-[200px] block" title={value}>
-                    {value}
+            view: ({ value }: { value: unknown }) => (
+                <span className="text-[10px] text-slate-600 truncate max-w-[200px] block" title={value as string}>
+                    {value as string}
                 </span>
             )
         }
@@ -92,7 +101,7 @@ export default function VisitorLogsPage() {
             <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
                 <div className="bg-[#0f172a] border border-slate-800 p-5 rounded-2xl shadow-sm">
                     <div className="text-slate-500 text-[10px] font-mono uppercase tracking-[0.2em] mb-1">Total_Hits</div>
-                    <div className="text-2xl font-black text-white tracking-tight">{total.toLocaleString()}</div>
+                    <div className="text-2xl font-black text-white tracking-tight">{totalHits.toLocaleString()}</div>
                 </div>
                 <div className="bg-[#0f172a] border border-slate-800 p-5 rounded-2xl shadow-sm">
                     <div className="text-slate-500 text-[10px] font-mono uppercase tracking-[0.2em] mb-1">Live_Protocol</div>

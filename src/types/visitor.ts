@@ -9,7 +9,8 @@ export interface VisitorLog {
     longitude: number;
     session_id: string;
     user_agent: string;
-    raw_data?: any;
+    total_visits?: number;
+    raw_data?: Record<string, unknown>;
 }
 
 export interface VisitorInfo {
@@ -17,4 +18,5 @@ export interface VisitorInfo {
     country: string;
     city: string;
     loc?: string; // Format: "lat,lng"
+    [key: string]: unknown;
 }

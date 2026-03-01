@@ -9,7 +9,9 @@ export const projectService = {
             .select(`
                 id,
                 title,
-                description,
+                description:description_en,
+                description_en,
+                description_pt,
                 imageUrl:image_url,
                 technologies,
                 demoUrl:demo_url,
@@ -28,7 +30,9 @@ export const projectService = {
             .select(`
                 id,
                 title,
-                description,
+                description:description_en,
+                description_en,
+                description_pt,
                 imageUrl:image_url,
                 technologies,
                 demoUrl:demo_url,
@@ -43,18 +47,14 @@ export const projectService = {
     },
 
     async create(project: Omit<Project, 'id' | 'createdAt'>) {
-        // Map camelCase to snake_case for DB if needed, but for now assuming DB columns match or we map here
-        // Our SQL schema used snake_case: image_url, demo_url, github_url
-        // Type 'Project' likely uses camelCase. Let's check types.
-
         const dbPayload = {
             title: project.title,
-            description: project.description,
+            description_en: project.description_en,
+            description_pt: project.description_pt,
             image_url: project.imageUrl,
             technologies: project.technologies,
             demo_url: project.demoUrl,
             github_url: project.githubUrl,
-            // created_at is auto-handled by default or we can pass it
         };
 
         const { data, error } = await supabase
@@ -63,7 +63,9 @@ export const projectService = {
             .select(`
                 id,
                 title,
-                description,
+                description:description_en,
+                description_en,
+                description_pt,
                 imageUrl:image_url,
                 technologies,
                 demoUrl:demo_url,
@@ -77,9 +79,18 @@ export const projectService = {
     },
 
     async update(id: string, project: Partial<Project>) {
-        const dbPayload: any = {};
+        const dbPayload: {
+            title?: string;
+            description_en?: string;
+            description_pt?: string;
+            image_url?: string;
+            technologies?: string[];
+            demo_url?: string;
+            github_url?: string;
+        } = {};
         if (project.title !== undefined) dbPayload.title = project.title;
-        if (project.description !== undefined) dbPayload.description = project.description;
+        if (project.description_en !== undefined) dbPayload.description_en = project.description_en;
+        if (project.description_pt !== undefined) dbPayload.description_pt = project.description_pt;
         if (project.imageUrl !== undefined) dbPayload.image_url = project.imageUrl;
         if (project.technologies !== undefined) dbPayload.technologies = project.technologies;
         if (project.demoUrl !== undefined) dbPayload.demo_url = project.demoUrl;
@@ -92,7 +103,9 @@ export const projectService = {
             .select(`
                 id,
                 title,
-                description,
+                description:description_en,
+                description_en,
+                description_pt,
                 imageUrl:image_url,
                 technologies,
                 demoUrl:demo_url,
