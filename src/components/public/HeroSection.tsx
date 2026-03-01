@@ -48,8 +48,8 @@ export default function HeroSection() {
 
                         <div className="space-y-6">
                             <h1 className="text-2xl sm:text-3xl md:text-5xl font-black leading-tight text-slate-900">
-                                <span className="text-accent-cyan">&gt;</span> INITIALIZING SYSTEM...<br />
-                                <span className="terminal-cursor text-primary">I BUILD SCALABLE ARCHITECTURES</span>
+                                <span className="text-accent-cyan">&gt;</span> {lang === 'pt' ? 'INICIANDO SISTEMA...' : 'INITIALIZING SYSTEM...'}<br />
+                                <span className="terminal-cursor text-primary">{lang === 'pt' ? 'EU CONSTRUO ARQUITETURAS ESCALÁVEIS' : 'I BUILD SCALABLE ARCHITECTURES'}</span>
                             </h1>
 
                             <p className="text-base sm:text-lg max-w-2xl border-l-2 border-slate-300 pl-4 text-slate-600">
@@ -63,18 +63,6 @@ export default function HeroSection() {
                                     </>
                                 )}
                             </p>
-                        </div>
-
-                        <div className="pt-6 flex flex-wrap gap-4">
-                            <a
-                                href="#projects"
-                                className="bg-slate-900 hover:bg-slate-700 px-6 py-3 rounded-lg text-sm font-bold uppercase tracking-widest transition-all text-white"
-                            >
-                                View Console Log
-                            </a>
-                            <button className="bg-transparent hover:bg-slate-100 text-slate-500 border border-slate-300 px-6 py-3 rounded-lg text-sm font-bold uppercase tracking-widest transition-all">
-                                Download Manifest
-                            </button>
                         </div>
                     </div>
                 </div>

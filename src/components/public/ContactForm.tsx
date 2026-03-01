@@ -4,6 +4,7 @@ import { zodResolver } from '@hookform/resolvers/zod';
 import * as z from 'zod';
 import { Loader2, CheckCircle, AlertCircle } from 'lucide-react';
 import { contactService } from '@/services/contactService';
+import { useLanguage } from '@/context/LanguageContextCore';
 
 // Schema de validação Zod
 const contactSchema = z.object({
@@ -18,6 +19,7 @@ type FormStatus = 'idle' | 'loading' | 'success' | 'error';
 export default function ContactForm() {
     const [status, setStatus] = useState<FormStatus>('idle');
     const [errorMessage, setErrorMessage] = useState('');
+    const { lang } = useLanguage();
 
     const {
         register,
@@ -63,12 +65,12 @@ export default function ContactForm() {
                 {/* Name */}
                 <div className="space-y-2">
                     <label className="text-[10px] font-mono text-primary uppercase tracking-[0.2em]">
-                        SENDER_IDENTITY
+                        {lang == 'pt' ? 'IDENTIDADE_REMETENTE' : 'SENDER_IDENTITY'}
                     </label>
                     <input
                         {...register('name')}
                         type="text"
-                        placeholder="NAME / ALIAS"
+                        placeholder={lang == 'pt' ? 'NOME / ALIAS' : 'NAME / ALIAS'}
                         className={`w-full bg-slate-50 border ${errors.name ? 'border-red-500' : 'border-slate-200'
                             } rounded-lg p-3 text-slate-900 focus:border-slate-900 focus:ring-1 focus:ring-slate-900 outline-none transition-all placeholder:text-slate-400 font-mono text-sm`}
                     />
@@ -80,12 +82,12 @@ export default function ContactForm() {
                 {/* Email */}
                 <div className="space-y-2">
                     <label className="text-[10px] font-mono text-primary uppercase tracking-[0.2em]">
-                        SIGNAL_PROTOCOL
+                        {lang == 'pt' ? 'PROTOCOLO_DE_SINAL' : 'SIGNAL_PROTOCOL'}
                     </label>
                     <input
                         {...register('email')}
                         type="email"
-                        placeholder="EMAIL_ADDRESS"
+                        placeholder={lang == 'pt' ? 'ENDEREÇO_DE_EMAIL' : 'EMAIL_ADDRESS'}
                         className={`w-full bg-slate-50 border ${errors.email ? 'border-red-500' : 'border-slate-200'
                             } rounded-lg p-3 text-slate-900 focus:border-slate-900 focus:ring-1 focus:ring-slate-900 outline-none transition-all placeholder:text-slate-400 font-mono text-sm`}
                     />
@@ -97,12 +99,12 @@ export default function ContactForm() {
                 {/* Message */}
                 <div className="space-y-2 md:col-span-2">
                     <label className="text-[10px] font-mono text-primary uppercase tracking-[0.2em]">
-                        ENCRYPTED_MESSAGE
+                        {lang == 'pt' ? 'MENSAGEM_CRIPTOGRAFADA' : 'ENCRYPTED_MESSAGE'}
                     </label>
                     <textarea
                         {...register('message')}
                         rows={5}
-                        placeholder="ENTER DATA PACKET HERE..."
+                        placeholder={lang == 'pt' ? 'DIGITE_PACOTE_DE_DADOS_AQUI...' : 'ENTER_DATA_PACKET_HERE...'}
                         className={`w-full bg-slate-50 border ${errors.message ? 'border-red-500' : 'border-slate-200'
                             } rounded-lg p-3 text-slate-900 focus:border-slate-900 focus:ring-1 focus:ring-slate-900 outline-none transition-all placeholder:text-slate-400 font-mono text-sm resize-none`}
                     />
@@ -120,12 +122,12 @@ export default function ContactForm() {
                     >
                         {status === 'loading' ? (
                             <>
-                                ENCRYPTING_PACKET...
+                                {lang == 'pt' ? 'CRIPTOGRAFANDO_PACOTE...' : 'ENCRYPTING_PACKET...'}
                                 <Loader2 size={16} className="animate-spin" />
                             </>
                         ) : (
                             <>
-                                TRANSMIT_DATA
+                                {lang == 'pt' ? 'TRANSMITIR_DADOS' : 'TRANSMIT_DATA'}
                                 <span className="material-symbols-outlined group-hover:translate-x-1 transition-transform text-sm">
                                     send
                                 </span>
@@ -138,7 +140,7 @@ export default function ContactForm() {
                 {status === 'success' && (
                     <div className="md:col-span-2 p-4 bg-emerald-50 border border-emerald-200 text-emerald-700 font-mono text-xs flex items-center gap-3 animate-fade-in rounded-lg">
                         <CheckCircle size={16} />
-                        <span>TRANSMISSION_COMPLETE: Data packet acknowledged by central relay.</span>
+                        <span>{ lang == 'pt' ? 'TRANSMISSAO_CONCLUIDA: Pacote de dados reconhecido pelo relay central.' : 'TRANSMISSION_COMPLETE: Data packet acknowledged by central relay.'}</span>
                     </div>
                 )}
                 {status === 'error' && (

@@ -1,17 +1,19 @@
 import ContactForm from '@/components/public/ContactForm';
 import { Mail, MapPin, Terminal } from 'lucide-react';
+import { useLanguage } from '@/context/LanguageContextCore';
 
 export default function ContactPage() {
+    const { lang } = useLanguage();
     return (
         <div className="py-24 px-6 bg-slate-100 min-h-screen relative overflow-hidden">
             <div className="max-w-4xl mx-auto relative z-10">
                 {/* Heading */}
                 <div className="text-center mb-16">
                     <h1 className="text-4xl font-black uppercase tracking-widest mb-4 text-slate-900">
-                        INITIATE_CONTACT
+                       {lang === 'pt' ? 'INICIAR_CONTATO' : 'INITIATE_CONTACT'}
                     </h1>
                     <p className="text-slate-500 font-mono text-sm uppercase">
-                        Secure end-to-end encrypted channel
+                        {lang === 'pt' ? 'Canal seguro de ponta a ponta' : 'Secure end-to-end encrypted channel'}
                     </p>
                 </div>
 
@@ -23,7 +25,7 @@ export default function ContactPage() {
                         </div>
                         <div>
                             <p className="text-[10px] font-mono text-slate-400 uppercase tracking-widest mb-1">
-                                EMAIL_ADDRESS
+                                {lang == 'pt' ? 'ENDEREÇO DE EMAIL' : 'EMAIL_ADDRESS'}
                             </p>
                             <a
                                 href="mailto:hello@devportfolio.com"

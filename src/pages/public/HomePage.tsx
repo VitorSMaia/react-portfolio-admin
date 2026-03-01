@@ -8,8 +8,10 @@ import { projectService } from '@/services/projectService';
 import { skillService } from '@/services/skillService';
 import type { Project } from '@/types';
 import type { Skill } from '@/types/skill';
+import { useLanguage } from '@/context/LanguageContextCore';
 
 export default function HomePage() {
+    const { lang } = useLanguage();
     const [featuredProjects, setFeaturedProjects] = useState<Project[]>([]);
     const [loadingProjects, setLoadingProjects] = useState(true);
     const [skills, setSkills] = useState<Skill[]>([]);
@@ -47,23 +49,23 @@ export default function HomePage() {
                     <div className="flex items-end justify-between mb-16 px-4 border-l-4 border-primary">
                         <div>
                             <h2 className="text-4xl font-black tracking-tighter uppercase mb-2 text-slate-900">
-                                // PROJECT_ARCHIVE
+                               {lang === 'pt' ? '// PROJETOS EM DESTAQUE' : '// FEATURED PROJECTS'}
                             </h2>
                             <p className="text-slate-500 font-mono text-sm tracking-widest uppercase">
-                                Decrypted repositories from current cycle
+                                {lang === 'pt' ? 'Repositórios descriptografados do ciclo atual' : 'Decrypted repositories from current cycle'}
                             </p>
                         </div>
                         <Link
                             to="/projects"
                             className="hidden md:block text-primary text-sm font-mono animate-pulse hover:no-underline"
                         >
-                            SCANNING_DATABASE...
+                            {lang === 'pt' ? 'DIGITALIZANDO O BANCO DE DADOS...' : 'SCANNING_DATABASE...'}
                         </Link>
                     </div>
 
                     {loadingProjects ? (
                         <div className="py-20 text-center text-primary font-mono text-sm animate-pulse">
-                            [SCANNING_FILESYSTEM] PLEASE WAIT...
+                            { lang === 'pt' ? '[DIGITALIZANDO O BANCO DE DADOS...] AGUARDE...' : '[SCANNING_FILESYSTEM] PLEASE WAIT...'}
                         </div>
                     ) : (
                         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
@@ -83,10 +85,10 @@ export default function HomePage() {
                 <div className="max-w-4xl mx-auto relative z-10">
                     <div className="text-center mb-16">
                         <h2 className="text-4xl font-black uppercase tracking-widest mb-4 text-slate-900">
-                            INITIATE_CONTACT
+                            {lang === 'pt' ? 'INICIAR_CONTATO' : 'INITIATE_CONTACT'}
                         </h2>
                         <p className="text-slate-500 font-mono text-sm uppercase">
-                            Secure end-to-end encrypted channel
+                            {lang === 'pt' ? 'Canal seguro de ponta a ponta' : 'Secure end-to-end encrypted channel'}
                         </p>
                     </div>
                     <ContactForm />
