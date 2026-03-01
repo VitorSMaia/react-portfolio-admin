@@ -23,3 +23,6 @@ dist-ssr
 *.sln
 *.sw?
 .env
+SES_SMTP_NODEMAILER_GUIDE.md
+SES_SETUP_GUIDE.md
+lint_output.txt
