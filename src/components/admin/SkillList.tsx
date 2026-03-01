@@ -82,7 +82,7 @@ export default function SkillList() {
                                         )
                                         }`}
                                 >
-                                    {skill.skill_categories?.label || skill.category}
+                                    {skill.skill_categories?.label_pt || skill.category}
                                 </span>
                             </td>
                             <td className="px-6 py-4">

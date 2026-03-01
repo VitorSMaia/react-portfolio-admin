@@ -58,12 +58,12 @@ export default function SkillsSection({ loading: skillsLoading }: SkillsSectionP
                                 >
                                     <h3 className={`font-bold uppercase tracking-widest mb-2 flex items-center gap-2 ${cat.color || 'text-primary'}`}>
                                         <span className="material-symbols-outlined">{cat.icon || 'star'}</span>
-                                        {cat.label}
+                                        {cat.label_pt}
                                     </h3>
                                     <p className="text-slate-400 text-sm leading-relaxed">
                                         {lang === 'pt'
-                                            ? (cat.description_pt || cat.description)
-                                            : (cat.description_en || cat.description)}
+                                            ? (cat.description_pt || cat.description_en)
+                                            : (cat.description_en || cat.description_pt)}
                                     </p>
                                 </div>
                             ))}

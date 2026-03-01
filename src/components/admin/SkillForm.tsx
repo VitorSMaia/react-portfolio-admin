@@ -56,7 +56,7 @@ export default function SkillForm() {
             const selectedCategory = categories.find(c => c.id === data.category_id);
             const payload = {
                 ...data,
-                category: selectedCategory?.label || data.category,
+                category: selectedCategory?.label_pt || data.category,
                 proficiency: Number(data.proficiency)
             };
 
@@ -112,7 +112,7 @@ export default function SkillForm() {
                             <option value="">Select a category...</option>
                             {categories.map(cat => (
                                 <option key={cat.id} value={cat.id}>
-                                    {cat.label}
+                                    {cat.label_pt}
                                 </option>
                             ))}
                         </select>
