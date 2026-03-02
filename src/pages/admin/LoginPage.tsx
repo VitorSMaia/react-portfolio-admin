@@ -1,21 +1,36 @@
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
+import { useForm } from 'react-hook-form';
+import { zodResolver } from '@hookform/resolvers/zod';
+import * as z from 'zod';
 import { useAuth } from '@/context/AuthContextCore';
 import { Lock, Mail, Terminal, Loader2, ArrowRight } from 'lucide-react';
 
+const loginSchema = z.object({
+    email: z.string().email('Invalid email address'),
+    password: z.string().min(6, 'Password must be at least 6 characters'),
+});
+
+type LoginFormData = z.infer<typeof loginSchema>;
+
 export default function LoginPage() {
-    const [email, setEmail] = useState('');
-    const [password, setPassword] = useState('');
     const [error, setError] = useState('');
     const { login, isLoading } = useAuth();
     const navigate = useNavigate();
 
-    const handleSubmit = async (e: React.FormEvent) => {
-        e.preventDefault();
+    const {
+        register,
+        handleSubmit,
+        formState: { errors },
+    } = useForm<LoginFormData>({
+        resolver: zodResolver(loginSchema),
+    });
+
+    const onSubmit = async (data: LoginFormData) => {
         setError('');
 
         try {
-            const success = await login(email, password);
+            const success = await login(data.email, data.password);
             if (success) {
                 navigate('/admin');
             } else {
@@ -46,20 +61,19 @@ export default function LoginPage() {
                     <p className="text-slate-400 text-sm mt-2 font-mono">Enter your credentials to continue</p>
                 </div>
 
-                <form onSubmit={handleSubmit} className="flex flex-col gap-5">
+                <form onSubmit={handleSubmit(onSubmit)} className="flex flex-col gap-5">
                     <div className="space-y-1.5">
                         <label className="text-xs font-mono text-slate-500 uppercase font-medium ml-1">Email Address</label>
                         <div className="relative group">
                             <Mail className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-500 group-focus-within:text-indigo-400 transition-colors" size={20} />
                             <input
+                                {...register('email')}
                                 type="email"
-                                value={email}
-                                onChange={(e) => setEmail(e.target.value)}
                                 placeholder="name@company.com"
-                                className="w-full bg-[#1e293b] text-white px-12 py-3.5 rounded-xl border border-slate-700 focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500 outline-none transition-all placeholder:text-slate-600 font-mono text-sm"
-                                required
+                                className={`w-full bg-[#1e293b] text-white px-12 py-3.5 rounded-xl border ${errors.email ? 'border-red-500' : 'border-slate-700'} focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500 outline-none transition-all placeholder:text-slate-600 font-mono text-sm`}
                             />
                         </div>
+                        {errors.email && <p className="text-xs text-red-500 font-mono mt-1 ml-1">{errors.email.message}</p>}
                     </div>
 
                     <div className="space-y-1.5">
@@ -72,14 +86,13 @@ export default function LoginPage() {
                         <div className="relative group">
                             <Lock className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-500 group-focus-within:text-indigo-400 transition-colors" size={20} />
                             <input
+                                {...register('password')}
                                 type="password"
-                                value={password}
-                                onChange={(e) => setPassword(e.target.value)}
                                 placeholder="Enter your password"
-                                className="w-full bg-[#1e293b] text-white px-12 py-3.5 rounded-xl border border-slate-700 focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500 outline-none transition-all placeholder:text-slate-600 font-mono text-sm"
-                                required
+                                className={`w-full bg-[#1e293b] text-white px-12 py-3.5 rounded-xl border ${errors.password ? 'border-red-500' : 'border-slate-700'} focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500 outline-none transition-all placeholder:text-slate-600 font-mono text-sm`}
                             />
                         </div>
+                        {errors.password && <p className="text-xs text-red-500 font-mono mt-1 ml-1">{errors.password.message}</p>}
                     </div>
 
                     {error && (

@@ -7,13 +7,23 @@ const api = axios.create({
     },
 });
 
-// Request interceptor: Attach JWT token to every request
+// Request interceptor: Attach JWT token and Relay API Key
 api.interceptors.request.use(
     (config) => {
         const token = localStorage.getItem('auth_token');
         if (token) {
             config.headers.Authorization = `Bearer ${token}`;
         }
+
+        // Attach Relay API Key if the request is for the SES server
+        const sesUrl = import.meta.env.VITE_SES_SERVER_URL || 'http://localhost:3001';
+        if (config.url?.startsWith(sesUrl) || config.url?.includes('/api/send-email')) {
+            const relayKey = import.meta.env.VITE_RELAY_API_KEY;
+            if (relayKey) {
+                config.headers['x-api-key'] = relayKey;
+            }
+        }
+
         return config;
     },
     (error) => {

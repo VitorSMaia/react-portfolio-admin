@@ -46,7 +46,7 @@ export default function SkillCategoryListPage() {
             label: 'Categoria',
             field: 'label_pt',
             view: ({ value, item }: { value: unknown; item: SkillCategory }) => {
-                const IconComponent = (Icons as any)[item.icon || 'Tags'] as LucideIcon || Icons.Tags;
+                const IconComponent = (Icons as unknown as Record<string, LucideIcon>)[item.icon || 'Tags'] || Icons.Tags;
                 return (
                     <div className="flex items-center gap-3">
                         <div className={`p-2 rounded-lg bg-[#1e293b] border border-slate-700/50 ${item.color || 'text-indigo-400'}`}>

@@ -1,13 +1,29 @@
 import express from 'express';
 import cors from 'cors';
 import nodemailer from 'nodemailer';
+import rateLimit from 'express-rate-limit';
 import 'dotenv/config';
-
 import { SESv2Client, SendEmailCommand } from "@aws-sdk/client-sesv2";
 
 const app = express();
 app.use(cors());
 app.use(express.json());
+
+// Rate Limiting: Max 5 requests per hour per IP for the email endpoint
+const limiter = rateLimit({
+    windowMs: 60 * 60 * 1000,
+    max: 5,
+    message: { success: false, error: 'Too many requests, please try again later.' }
+});
+
+// Middleware: API Key Validation
+const validateApiKey = (req, res, next) => {
+    const apiKey = req.headers['x-api-key'];
+    if (!apiKey || apiKey !== process.env.RELAY_API_KEY) {
+        return res.status(403).json({ success: false, error: 'Forbidden: Invalid API Key' });
+    }
+    next();
+};
 
 // Configuração do Cliente SES v2
 const sesClient = new SESv2Client({
@@ -18,27 +34,33 @@ const sesClient = new SESv2Client({
     },
 });
 
-// Configuração do Transportador Nodemailer (Usando SES v2)
 const transporter = nodemailer.createTransport({
     SES: { sesClient, SendEmailCommand },
 });
 
-app.post('/api/send-email', async (req, res) => {
+app.post('/api/send-email', limiter, validateApiKey, async (req, res) => {
     const { name, email, message } = req.body;
+
+    // Basic Input Validation
+    if (!name || !email || !message) {
+        return res.status(400).json({ success: false, error: 'Missing required fields' });
+    }
+
+    if (!email.includes('@')) {
+        return res.status(400).json({ success: false, error: 'Invalid email address' });
+    }
 
     console.log(`📡 Recebendo pacote de dados: ${name} <${email}>`);
 
     try {
-        // 1. Validar Destinatário
         const toEmail = process.env.ADMIN_EMAIL;
         if (!toEmail) {
             throw new Error("ADMIN_EMAIL não está definido no arquivo .env");
         }
 
-        // 2. Definir as opções do e-mail
         const info = await transporter.sendMail({
             from: 'contato@joaomaia.app.br',
-            to: 'joaovitorsmaia1@gmail.com',
+            to: toEmail,
             replyTo: email,
             subject: `🚀 PORTFOLIO_CONTACT: ${name}`,
             text: `Nome: ${name}\nEmail: ${email}\n\nMensagem: ${message}`,

@@ -101,7 +101,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 
         try {
             // Prepare only the fields provided in data
-            const updates: any = {
+            const updates: Record<string, string | Date | undefined> = {
                 updated_at: new Date(),
             };
 
