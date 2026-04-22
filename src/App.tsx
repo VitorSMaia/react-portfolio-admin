@@ -1,5 +1,6 @@
 import { Suspense, lazy } from 'react';
 import { BrowserRouter, Routes, Route } from 'react-router-dom';
+import GaListeners from '@/components/analytics/GaListeners';
 import PublicLayout from '@/layouts/PublicLayout';
 import AdminLayout from '@/layouts/AdminLayout';
 import ProtectedRoute from '@/components/admin/ProtectedRoute';
@@ -30,6 +31,7 @@ const LoadingFallback = () => (
 function App() {
   return (
     <BrowserRouter>
+      <GaListeners />
       <Suspense fallback={<LoadingFallback />}>
         <Routes>
           {/* Public Routes */}
