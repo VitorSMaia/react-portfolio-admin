@@ -1,24 +1,25 @@
+'use client';
+
 import { useEffect, useRef } from 'react';
-import { useLocation } from 'react-router-dom';
+import { usePathname, useSearchParams } from 'next/navigation';
 import ReactGA from 'react-ga4';
 import { getGaMeasurementId } from '@/analytics/ga';
 
-/**
- * Envia pageview em SPAs sempre que a rota (pathname + query) muda.
- */
 export function useGaPageViews(): void {
-  const location = useLocation();
+  const pathname = usePathname();
+  const searchParams = useSearchParams();
   const lastSentRef = useRef<{ page: string; at: number } | null>(null);
 
   useEffect(() => {
     if (!getGaMeasurementId()) return;
 
-    const page = `${location.pathname}${location.search}`;
+    const search = searchParams?.toString() ?? '';
+    const page = `${pathname}${search ? `?${search}` : ''}`;
     const now = Date.now();
     const last = lastSentRef.current;
     if (last && last.page === page && now - last.at < 400) return;
     lastSentRef.current = { page, at: now };
 
     ReactGA.send({ hitType: 'pageview', page });
-  }, [location.pathname, location.search]);
+  }, [pathname, searchParams]);
 }

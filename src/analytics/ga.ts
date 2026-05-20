@@ -1,7 +1,8 @@
+
 import ReactGA from 'react-ga4';
 
 export function getGaMeasurementId(): string | undefined {
-  const id = import.meta.env.VITE_GA_ID?.trim();
+  const id = process.env.NEXT_PUBLIC_GA_ID?.trim();
   return id || undefined;
 }
 

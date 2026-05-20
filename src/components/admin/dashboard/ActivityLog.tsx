@@ -1,3 +1,5 @@
+'use client';
+
 export default function ActivityLog() {
     const logs = [
         { type: 'SUCCESS', message: "Projeto 'API Gateway' atualizado.", time: '10:42:23', color: 'text-emerald-400' },

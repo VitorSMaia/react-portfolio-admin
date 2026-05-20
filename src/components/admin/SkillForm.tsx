@@ -1,15 +1,18 @@
+'use client';
+
 import { useEffect, useState, useCallback } from 'react';
 import { useForm } from 'react-hook-form';
-import { useNavigate, useParams } from 'react-router-dom';
+import { useRouter, useParams } from 'next/navigation';
 import { Save, Loader2, AlertCircle } from 'lucide-react';
 import { skillService } from '@/services/skillService';
 import { skillCategoryService } from '@/services/skillCategoryService';
 import type { SkillInput, SkillCategory } from '@/types/skill';
 
 export default function SkillForm() {
-    const { id } = useParams();
-    const navigate = useNavigate();
-    const isEditing = Boolean(id);
+    const params = useParams();
+    const id = params?.id as string | undefined;
+    const router = useRouter();
+    const isEditing = Boolean(id) && id !== 'new';
     const [loading, setLoading] = useState(false);
     const [fetching, setFetching] = useState(true);
     const [error, setError] = useState<string | null>(null);
@@ -66,7 +69,7 @@ export default function SkillForm() {
                 await skillService.createSkill(payload);
             }
 
-            navigate('/admin/skills');
+            router.push('/admin/skills');
         } catch (err) {
             console.error('Failed to save skill', err);
             setError('Failed to save skill. Please try again.');
@@ -133,7 +136,7 @@ export default function SkillForm() {
                 <div className="flex justify-end gap-4 pt-6 border-t border-slate-800">
                     <button
                         type="button"
-                        onClick={() => navigate('/admin/skills')}
+                        onClick={() => router.push('/admin/skills')}
                         className="px-6 py-2.5 rounded-lg border border-slate-700 text-slate-400 font-bold text-sm tracking-wide hover:bg-slate-800 transition-colors uppercase"
                     >
                         Cancel

@@ -1,3 +1,5 @@
+'use client';
+
 import { useEffect, useState } from 'react';
 import { profileService, type PublicProfile } from '@/services/profileService';
 import { useLanguage } from '@/context/LanguageContextCore';
@@ -49,7 +51,6 @@ export default function HeroSection() {
                         <div className="space-y-6">
                             <h1 className="text-2xl sm:text-3xl md:text-5xl font-black leading-tight text-slate-900">
                                 <span className="text-accent-cyan">&gt;</span> {lang === 'pt' ? 'INICIANDO SISTEMA...' : 'INITIALIZING SYSTEM...'}<br />
-                                <span className="terminal-cursor text-primary">{lang === 'pt' ? 'EU CONSTRUO ARQUITETURAS ESCALÁVEIS' : 'I BUILD SCALABLE ARCHITECTURES'}</span>
                             </h1>
 
                             <p className="text-base sm:text-lg max-w-2xl border-l-2 border-slate-300 pl-4 text-slate-600">

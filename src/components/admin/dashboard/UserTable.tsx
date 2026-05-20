@@ -1,3 +1,5 @@
+'use client';
+
 import { Edit2, Trash2, Users } from 'lucide-react';
 import { useEffect, useState } from 'react';
 import { supabase } from '@/lib/supabase';

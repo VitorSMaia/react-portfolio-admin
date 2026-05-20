@@ -1,3 +1,5 @@
+'use client';
+
 import { useEffect, useState } from 'react';
 import type { Skill, SkillCategory } from '@/types/skill';
 import { skillCategoryService } from '@/services/skillCategoryService';
@@ -36,8 +38,8 @@ export default function SkillsSection({ loading: skillsLoading }: SkillsSectionP
                 <div className="text-center mb-12 sm:mb-20">
                     <h2 className="text-3xl sm:text-5xl font-black uppercase tracking-[0.1em] sm:tracking-[0.2em] mb-4 text-slate-900 font-display">
                         {lang === 'pt'
-                            ? ('// ENGENHARIA DE SOLUÇÕES')
-                            : ('// SOLUTIONS ENGINEERING')}
+                            ? ('ENGENHARIA DE SOLUÇÕES')
+                            : ('SOLUTIONS ENGINEERING')}
                     </h2>
                     <div className="w-32 h-1 bg-primary mx-auto mb-4" />
                     <p className="text-slate-500 font-mono text-sm tracking-widest uppercase">
@@ -59,7 +61,7 @@ export default function SkillsSection({ loading: skillsLoading }: SkillsSectionP
                                     className="col-span-1 p-6 bg-white border border-slate-200 border-r-4 rounded-lg shadow-sm hover:scale-105 transition-all duration-300"
                                 >
                                     <h3 className={`font-bold uppercase tracking-widest mb-2 flex items-center gap-2 ${cat.color || 'text-primary'}`}>
-                                        <span className="material-symbols-outlined">{cat.icon || 'star'}</span>
+                                        {/* <span className="material-symbols-outlined">{cat.icon || 'star'}</span> */}
                                         {lang === 'pt'
                                             ? (cat.label_pt || '')
                                             : (cat.label_en || '')}

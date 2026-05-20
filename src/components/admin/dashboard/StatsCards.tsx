@@ -1,4 +1,6 @@
-import { Layers, Eye } from 'lucide-react';
+'use client';
+
+import { Layers } from 'lucide-react';
 import { useEffect, useState } from 'react';
 import { supabase } from '@/lib/supabase';
 
@@ -24,11 +26,9 @@ function StatCard({ title, value, trend, icon }: StatCardProps) {
 
 export default function StatsCards() {
     const [projectCount, setProjectCount] = useState<number | string>('-');
-    const [accessCount, setAccessCount] = useState<number | string>('-');
 
     useEffect(() => {
         async function fetchStats() {
-            // 1. Fetch total projects
             const { count: pCount, error: pError } = await supabase
                 .from('projects')
                 .select('*', { count: 'exact', head: true });
@@ -36,34 +36,17 @@ export default function StatsCards() {
             if (!pError && pCount !== null) {
                 setProjectCount(pCount);
             }
-
-            // 2. Fetch accesses in the last 24 hours
-            const twentyFourHoursAgo = new Date(Date.now() - 24 * 60 * 60 * 1000).toISOString();
-            const { count: aCount, error: aError } = await supabase
-                .from('visitor_logs')
-                .select('*', { count: 'exact', head: true })
-                .gte('created_at', twentyFourHoursAgo);
-
-            if (!aError && aCount !== null) {
-                setAccessCount(aCount);
-            }
         }
         fetchStats();
     }, []);
 
     return (
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+        <div className="grid grid-cols-1 gap-4">
             <StatCard
                 title="Projetos"
                 value={projectCount}
                 trend="Total cadastrado"
                 icon={<Layers size={48} />}
-            />
-            <StatCard
-                title="Acessos"
-                value={accessCount}
-                trend="@últimas 24h"
-                icon={<Eye size={48} />}
             />
         </div>
     );

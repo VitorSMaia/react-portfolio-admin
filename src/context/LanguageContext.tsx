@@ -1,3 +1,5 @@
+'use client';
+
 import React, { useState, useEffect } from 'react';
 import type { Language } from '@/types/language';
 import { LanguageContext } from './LanguageContextCore';
@@ -63,6 +65,7 @@ const translations = {
 
 export const LanguageProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
     const [lang, setLang] = useState<Language>(() => {
+        if (typeof window === 'undefined') return 'pt';
         const saved = localStorage.getItem('dv_portfolio_lang');
         return (saved as Language) || 'pt';
     });

@@ -1,73 +1,187 @@
-# React + TypeScript + Vite
+# DV Portfolio — Admin & Public
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+Portfolio pessoal full-stack com painel de administração, construído com **Next.js 16**, **Supabase** e **Tailwind CSS v4**.
 
-Currently, two official plugins are available:
+---
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Babel](https://babeljs.io/) (or [oxc](https://oxc.rs) when used in [rolldown-vite](https://vite.dev/guide/rolldown)) for Fast Refresh
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/) for Fast Refresh
+## Stack
 
-## React Compiler
+| Camada | Tecnologia |
+|---|---|
+| Framework | Next.js 16 (App Router, Turbopack) |
+| Banco de dados / Auth | Supabase (PostgreSQL + RLS) |
+| Estilo | Tailwind CSS v4 |
+| Formulários | React Hook Form + Zod |
+| Animações | Framer Motion |
+| E-mail | AWS SES via API Route `/api/contact` |
+| Analytics | Google Analytics 4 (`react-ga4`) + Vercel Speed Insights |
+| Deploy | Vercel |
 
-The React Compiler is not enabled on this template because of its impact on dev & build performances. To add it, see [this documentation](https://react.dev/learn/react-compiler/installation).
+---
 
-## Expanding the ESLint configuration
+## Pré-requisitos
 
-If you are developing a production application, we recommend updating the configuration to enable type-aware lint rules:
+- Node.js 20+
+- Conta no [Supabase](https://supabase.com)
+- (Opcional) Conta AWS com SES configurado para o formulário de contato
 
-```js
-export default defineConfig([
-  globalIgnores(['dist']),
-  {
-    files: ['**/*.{ts,tsx}'],
-    extends: [
-      // Other configs...
+---
 
-      // Remove tseslint.configs.recommended and replace with this
-      tseslint.configs.recommendedTypeChecked,
-      // Alternatively, use this for stricter rules
-      tseslint.configs.strictTypeChecked,
-      // Optionally, add this for stylistic rules
-      tseslint.configs.stylisticTypeChecked,
+## Configuração local
 
-      // Other configs...
-    ],
-    languageOptions: {
-      parserOptions: {
-        project: ['./tsconfig.node.json', './tsconfig.app.json'],
-        tsconfigRootDir: import.meta.dirname,
-      },
-      // other options...
-    },
-  },
-])
+### 1. Instalar dependências
+
+```bash
+npm install
 ```
 
-You can also install [eslint-plugin-react-x](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-x) and [eslint-plugin-react-dom](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-dom) for React-specific lint rules:
+### 2. Configurar variáveis de ambiente
 
-```js
-// eslint.config.js
-import reactX from 'eslint-plugin-react-x'
-import reactDom from 'eslint-plugin-react-dom'
+Copie o arquivo de exemplo e preencha com suas credenciais:
 
-export default defineConfig([
-  globalIgnores(['dist']),
-  {
-    files: ['**/*.{ts,tsx}'],
-    extends: [
-      // Other configs...
-      // Enable lint rules for React
-      reactX.configs['recommended-typescript'],
-      // Enable lint rules for React DOM
-      reactDom.configs.recommended,
-    ],
-    languageOptions: {
-      parserOptions: {
-        project: ['./tsconfig.node.json', './tsconfig.app.json'],
-        tsconfigRootDir: import.meta.dirname,
-      },
-      // other options...
-    },
-  },
-])
+```bash
+cp .env.example .env
 ```
+
+```env
+# Supabase (obrigatório)
+NEXT_PUBLIC_SUPABASE_URL=https://xxxx.supabase.co
+NEXT_PUBLIC_SUPABASE_ANON_KEY=sua_anon_key
+
+# Google Analytics (opcional)
+NEXT_PUBLIC_GA_ID=G-XXXXXXXXXX
+
+# AWS SES — necessário para o formulário de contato funcionar
+AWS_ACCESS_KEY_ID=sua_access_key
+AWS_SECRET_ACCESS_KEY=sua_secret_key
+AWS_REGION=us-east-1
+ADMIN_EMAIL=seu@email.com
+SES_CONFIG_SET=my-first-configuration-set
+```
+
+### 3. Aplicar migrações do banco de dados
+
+Execute os arquivos SQL na ordem dentro do **SQL Editor** do Supabase:
+
+```
+database/migrations/
+├── 2024_01_01_000000_create_projects_table.sql
+├── 2024_01_01_000001_create_skills_table.sql
+├── 2024_01_01_000002_create_contact_messages_table.sql
+├── 2024_01_01_000003_setup_auth.sql
+├── 2024_01_01_000004_add_socials_to_profile.sql
+├── 2024_01_01_000005_fix_auth_profiles.sql
+├── 2024_10_01_120000_create_skill_categories_table.sql
+├── 2024_10_02_153000_add_category_id_to_skills_table.sql
+├── 2024_11_01_000000_create_visitor_logs_table.sql
+├── 2024_11_01_000001_update_profiles_and_visitors.sql
+└── 2026_04_22_000000_security_hardening_rls.sql
+```
+
+Depois aplique os seeds (opcional):
+
+```
+database/seeds/
+├── skill_categories_seed.sql
+└── projects_seed.sql
+```
+
+---
+
+## Iniciar o projeto
+
+```bash
+# Desenvolvimento (com Turbopack)
+npm run dev
+```
+
+Acesse em **http://localhost:3000**
+
+```bash
+# Build de produção
+npm run build
+
+# Iniciar build de produção localmente
+npm start
+
+# Lint
+npm run lint
+```
+
+---
+
+## Rotas
+
+### Público
+
+| Rota | Descrição |
+|---|---|
+| `/` | Home — Hero, Projetos em destaque, Skills, Contato |
+| `/projects` | Todos os projetos |
+| `/contact` | Formulário de contato |
+
+### Admin (protegido por Supabase Auth)
+
+| Rota | Descrição |
+|---|---|
+| `/admin/login` | Login |
+| `/admin/dashboard` | Dashboard com stats e perfil |
+| `/admin/projects` | Listagem de projetos |
+| `/admin/projects/[id]` | Criar (`new`) ou editar projeto |
+| `/admin/skills` | Listagem de skills |
+| `/admin/skills/[id]` | Criar (`new`) ou editar skill |
+| `/admin/skill-categories` | Listagem de categorias |
+| `/admin/skill-categories/[id]` | Criar (`new`) ou editar categoria |
+| `/admin/skill-categories/[id]/skills` | Skills de uma categoria |
+| `/admin/visitor-logs` | Logs de visitantes |
+
+### API
+
+| Rota | Método | Descrição |
+|---|---|---|
+| `/api/contact` | `POST` | Envia e-mail via AWS SES |
+| `/api/visitors` | `POST` | Registra log de visitante |
+
+---
+
+## Estrutura de pastas
+
+```
+src/
+├── app/                  # App Router (Next.js)
+│   ├── (public)/         # Rotas públicas
+│   ├── admin/            # Rotas do painel admin
+│   ├── api/              # API Routes (contact, visitors)
+│   ├── layout.tsx        # Root layout (providers globais)
+│   └── globals.css       # CSS global + tema Tailwind
+├── views/                # Componentes de página (reutilizados pelas rotas)
+│   ├── public/
+│   └── admin/
+├── components/           # Componentes reutilizáveis
+│   ├── admin/
+│   ├── public/
+│   ├── analytics/
+│   └── ui/
+├── context/              # AuthContext, LanguageContext
+├── hooks/                # useVisitorTracking, useGaPageViews, ...
+├── layouts/              # AdminLayout, PublicLayout
+├── lib/                  # supabase.ts (browser), supabase-server.ts (server)
+├── services/             # Camada de acesso a dados (Supabase)
+├── types/                # Tipos TypeScript
+└── proxy.ts              # Auth guard (Next.js 16 Proxy)
+```
+
+---
+
+## Deploy na Vercel
+
+O projeto está configurado para deploy zero-config:
+
+```bash
+# Via Vercel CLI
+npx vercel --prod
+```
+
+Configure as variáveis de ambiente no dashboard da Vercel em **Settings → Environment Variables** com os mesmos valores do `.env`.
+
+> As variáveis `AWS_*`, `ADMIN_EMAIL` e `SES_CONFIG_SET` são **server-side** — não precisam do prefixo `NEXT_PUBLIC_`.

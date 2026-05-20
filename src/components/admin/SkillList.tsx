@@ -1,6 +1,7 @@
+'use client';
 
 import { useEffect, useState } from 'react';
-import { Link } from 'react-router-dom';
+import Link from 'next/link';
 import { Edit2, Trash2, Loader2, AlertCircle } from 'lucide-react';
 import { skillService } from '@/services/skillService';
 import type { Skill } from '@/types/skill';
@@ -91,7 +92,7 @@ export default function SkillList() {
                             <td className="px-6 py-4 text-right">
                                 <div className="flex items-center justify-end gap-2">
                                     <Link
-                                        to={`/admin/skills/${skill.id}/edit`}
+                                        href={`/admin/skills/${skill.id}`}
                                         className="p-2 text-slate-400 hover:text-white hover:bg-slate-700 rounded-lg transition-colors"
                                         title="Edit"
                                     >

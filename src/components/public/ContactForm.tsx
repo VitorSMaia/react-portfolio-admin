@@ -1,9 +1,10 @@
+'use client';
+
 import { useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import * as z from 'zod';
 import { Loader2, CheckCircle, AlertCircle } from 'lucide-react';
-import { contactService } from '@/services/contactService';
 import { useLanguage } from '@/context/LanguageContextCore';
 
 // Schema de validação Zod
@@ -35,14 +36,15 @@ export default function ContactForm() {
         setErrorMessage('');
 
         try {
-            // Salva no banco via serviço
-            await contactService.saveToDatabase(data);
+            const res = await fetch('/api/contact', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(data),
+            });
 
-            // Tenta disparar e-mail via serviço (non-blocking)
-            try {
-                await contactService.sendMessage(data);
-            } catch (error) {
-                console.warn('Email dispatch failed, but DB record saved.', error);
+            if (!res.ok) {
+                const err = await res.json().catch(() => ({}));
+                throw new Error(err.error ?? 'TRANSMISSION_FAILED: Connection to relay lost.');
             }
 
             setStatus('success');
@@ -128,9 +130,9 @@ export default function ContactForm() {
                         ) : (
                             <>
                                 {lang == 'pt' ? 'TRANSMITIR_DADOS' : 'TRANSMIT_DATA'}
-                                <span className="material-symbols-outlined group-hover:translate-x-1 transition-transform text-sm">
+                                {/* <span className="material-symbols-outlined group-hover:translate-x-1 transition-transform text-sm">
                                     send
-                                </span>
+                                </span> */}
                             </>
                         )}
                     </button>

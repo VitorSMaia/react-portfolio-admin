@@ -1,10 +1,12 @@
+'use client';
+
 import { Save, Loader2, Image as ImageIcon } from 'lucide-react';
 import { useState } from 'react';
 import { projectService } from '@/services/projectService';
-import { useNavigate } from 'react-router-dom';
+import { useRouter } from 'next/navigation';
 
 export default function ProjectForm() {
-    const navigate = useNavigate();
+    const router = useRouter();
     const [loading, setLoading] = useState(false);
     const [formData, setFormData] = useState({
         title: '',
@@ -117,7 +119,7 @@ export default function ProjectForm() {
                 <div className="pt-2 flex justify-end gap-3">
                     <button
                         type="button"
-                        onClick={() => navigate('/admin/projects/new')}
+                        onClick={() => router.push('/admin/projects/new')}
                         className="text-slate-400 hover:text-white px-4 py-2 text-xs font-mono uppercase tracking-wide transition-colors"
                     >
                         Formulário Completo

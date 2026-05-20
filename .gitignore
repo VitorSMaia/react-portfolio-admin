@@ -10,6 +10,8 @@ lerna-debug.log*
 node_modules
 dist
 dist-ssr
+build
+.next
 *.local
 
 # Editor directories and files
@@ -27,3 +29,6 @@ SES_SMTP_NODEMAILER_GUIDE.md
 SES_SETUP_GUIDE.md
 lint_output.txt
 .agents
+.vercel
+.env*.local
+.claude

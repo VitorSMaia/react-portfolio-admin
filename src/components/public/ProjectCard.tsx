@@ -1,3 +1,5 @@
+'use client';
+
 import type { Project } from '@/types';
 import DOMPurify from 'dompurify';
 import { useLanguage } from '@/context/LanguageContextCore';
@@ -80,7 +82,7 @@ export default function ProjectCard({ project, index = 0 }: ProjectCardProps) {
                             className="flex-1 flex items-center justify-center gap-2 bg-slate-50 hover:bg-slate-900 hover:text-white border border-slate-200 py-3 rounded-lg text-xs font-black uppercase tracking-widest transition-all text-slate-700"
                         >
                             {lang === 'pt' ? 'ACESSAR FONTE' : 'ACCESS SOURCE'}{' '}
-                            <span className="material-symbols-outlined text-sm">lock_open</span>
+                            {/* <span className="material-symbols-outlined text-sm">lock_open</span> */}
                         </a>
                     )}
                     {project.demoUrl && (
@@ -97,7 +99,7 @@ export default function ProjectCard({ project, index = 0 }: ProjectCardProps) {
                     {!project.githubUrl && !project.demoUrl && (
                         <button className="w-full flex items-center justify-center gap-2 bg-slate-50 hover:bg-slate-900 hover:text-white border border-slate-200 py-3 rounded-lg text-xs font-black uppercase tracking-widest transition-all text-slate-700">
                             {lang === 'pt' ? 'ACESSAR FONTE' : 'ACCESS SOURCE'}{' '}
-                            <span className="material-symbols-outlined text-sm">lock_open</span>
+                            {/* <span className="material-symbols-outlined text-sm">lock_open</span> */}
                         </button>
                     )}
                 </div>

@@ -1,5 +1,7 @@
+'use client';
+
 import { useEffect, useRef } from 'react';
-import { useLocation } from 'react-router-dom';
+import { usePathname, useSearchParams } from 'next/navigation';
 import ReactGA from 'react-ga4';
 import { getGaMeasurementId } from '@/analytics/ga';
 
@@ -19,41 +21,33 @@ function resolveButtonLabel(el: HTMLElement): string {
   return '(sem rótulo)';
 }
 
-/**
- * Regista cliques em &lt;button&gt; e inputs de tipo botão/submit/reset (delegação no documento).
- */
 export function useGaButtonClickTracking(): void {
-  const location = useLocation();
-  const locationRef = useRef(location);
-  locationRef.current = location;
+  const pathname = usePathname();
+  const searchParams = useSearchParams();
+  const routeRef = useRef('');
+
+  useEffect(() => {
+    const search = searchParams?.toString() ?? '';
+    routeRef.current = `${pathname}${search ? `?${search}` : ''}`;
+  }, [pathname, searchParams]);
 
   useEffect(() => {
     if (!getGaMeasurementId()) return;
 
     const onPointerDown = (e: PointerEvent) => {
       if (e.button !== 0) return;
-
       const target = e.target as HTMLElement | null;
       if (!target) return;
-
       const el = target.closest(
         'button, input[type="button"], input[type="submit"], input[type="reset"]',
       ) as HTMLElement | null;
       if (!el) return;
-
       if (el instanceof HTMLButtonElement && el.disabled) return;
       if (el instanceof HTMLInputElement && el.disabled) return;
 
       const label = resolveButtonLabel(el);
-      const loc = locationRef.current;
-      const route = `${loc.pathname}${loc.search}`;
-      const combinedLabel = `${route} — ${label}`.slice(0, 500);
-
-      ReactGA.event({
-        category: 'Interação',
-        action: 'clique_botao',
-        label: combinedLabel,
-      });
+      const combinedLabel = `${routeRef.current} — ${label}`.slice(0, 500);
+      ReactGA.event({ category: 'Interação', action: 'clique_botao', label: combinedLabel });
     };
 
     document.addEventListener('pointerdown', onPointerDown, true);
